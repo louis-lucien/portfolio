@@ -1,8 +1,16 @@
 import { NextResponse } from "next/server";
 import fs from "fs/promises";
 import path from "path";
+import { isAuthed } from "@/lib/auth";
+import { commitFile, listDir, isGithubMode } from "@/lib/github";
+
+const IMG_RE = /\.(jpg|jpeg|png|webp)$/i;
 
 export async function POST(request: Request) {
+  if (!(await isAuthed())) {
+    return NextResponse.json({ error: "Non autorisé" }, { status: 401 });
+  }
+
   try {
     const formData = await request.formData();
     const file = formData.get("file") as File;
@@ -18,14 +26,26 @@ export async function POST(request: Request) {
       return NextResponse.json({ error: "Invalid destination" }, { status: 400 });
     }
 
+    const bytes = Buffer.from(await file.arrayBuffer());
+
+    if (isGithubMode()) {
+      await commitFile(
+        `public/${safeDest}`,
+        bytes.toString("base64"),
+        `chore(admin): image ${safeDest}`
+      );
+      return NextResponse.json({
+        success: true,
+        path: `/${safeDest}`,
+        size: file.size,
+        redeploy: true,
+      });
+    }
+
+    // Local dev: write to disk.
     const fullPath = path.join(process.cwd(), "public", safeDest);
-
-    // Ensure directory exists
     await fs.mkdir(path.dirname(fullPath), { recursive: true });
-
-    // Write file
-    const bytes = await file.arrayBuffer();
-    await fs.writeFile(fullPath, Buffer.from(bytes));
+    await fs.writeFile(fullPath, bytes);
 
     return NextResponse.json({
       success: true,
@@ -33,44 +53,54 @@ export async function POST(request: Request) {
       size: file.size,
     });
   } catch (error) {
-    return NextResponse.json({ error: "Upload failed" }, { status: 500 });
+    const message = error instanceof Error ? error.message : "Upload failed";
+    return NextResponse.json({ error: message }, { status: 500 });
   }
 }
 
 export async function GET() {
+  if (!(await isAuthed())) {
+    return NextResponse.json({ error: "Non autorisé" }, { status: 401 });
+  }
+
+  const result: Record<string, string[]> = { profile: [], certs: [], projects: [] };
+
   try {
+    if (isGithubMode()) {
+      const root = await listDir("public/images");
+      for (const entry of root) {
+        if (entry.type === "file" && /^profile\.(jpg|jpeg|png|webp)$/i.test(entry.name)) {
+          result.profile.push(`/images/${entry.name}`);
+        }
+      }
+      const certs = await listDir("public/images/certs");
+      result.certs = certs
+        .filter((e) => e.type === "file" && IMG_RE.test(e.name))
+        .map((e) => `/images/certs/${e.name}`);
+      const projects = await listDir("public/images/projects");
+      result.projects = projects
+        .filter((e) => e.type === "file" && IMG_RE.test(e.name))
+        .map((e) => `/images/projects/${e.name}`);
+
+      return NextResponse.json(result);
+    }
+
+    // Local dev: read from disk.
     const imagesDir = path.join(process.cwd(), "public/images");
 
-    const result: Record<string, string[]> = {
-      profile: [],
-      certs: [],
-      projects: [],
-    };
-
-    // Check profile
     for (const ext of ["jpg", "jpeg", "png", "webp"]) {
       try {
         await fs.access(path.join(imagesDir, `profile.${ext}`));
         result.profile.push(`/images/profile.${ext}`);
       } catch {}
     }
-
-    // List certs
     try {
-      const certsDir = path.join(imagesDir, "certs");
-      const files = await fs.readdir(certsDir);
-      result.certs = files
-        .filter((f) => /\.(jpg|jpeg|png|webp)$/i.test(f))
-        .map((f) => `/images/certs/${f}`);
+      const files = await fs.readdir(path.join(imagesDir, "certs"));
+      result.certs = files.filter((f) => IMG_RE.test(f)).map((f) => `/images/certs/${f}`);
     } catch {}
-
-    // List projects
     try {
-      const projDir = path.join(imagesDir, "projects");
-      const files = await fs.readdir(projDir);
-      result.projects = files
-        .filter((f) => /\.(jpg|jpeg|png|webp)$/i.test(f))
-        .map((f) => `/images/projects/${f}`);
+      const files = await fs.readdir(path.join(imagesDir, "projects"));
+      result.projects = files.filter((f) => IMG_RE.test(f)).map((f) => `/images/projects/${f}`);
     } catch {}
 
     return NextResponse.json(result);

@@ -110,6 +110,15 @@ export default function AdminPage() {
   const [error, setError] = useState<string | null>(null);
   const [loading, setLoading] = useState(true);
   const [rawConfig, setRawConfig] = useState("");
+  const [redeploy, setRedeploy] = useState(false);
+
+  // Auth
+  const [authChecking, setAuthChecking] = useState(true);
+  const [authReq, setAuthReq] = useState(false);
+  const [authed, setAuthed] = useState(false);
+  const [pwInput, setPwInput] = useState("");
+  const [authError, setAuthError] = useState<string | null>(null);
+  const [loggingIn, setLoggingIn] = useState(false);
 
   // Data states
   const [personal, setPersonal] = useState<PersonalData>({
@@ -201,7 +210,62 @@ export default function AdminPage() {
     }
   }, []);
 
-  useEffect(() => { loadConfig(); }, [loadConfig]);
+  // ─── Auth ──────────────────────────────────────────────────
+  const checkAuth = useCallback(async () => {
+    setAuthChecking(true);
+    try {
+      const res = await fetch("/api/auth");
+      const data = await res.json();
+      setAuthReq(!!data.required);
+      setAuthed(!!data.authed);
+      return !!data.authed;
+    } catch {
+      setAuthReq(false);
+      setAuthed(false);
+      return false;
+    } finally {
+      setAuthChecking(false);
+    }
+  }, []);
+
+  useEffect(() => {
+    (async () => {
+      const ok = await checkAuth();
+      if (ok) loadConfig();
+      else setLoading(false);
+    })();
+  }, [checkAuth, loadConfig]);
+
+  async function handleLogin(e: React.FormEvent) {
+    e.preventDefault();
+    setLoggingIn(true);
+    setAuthError(null);
+    try {
+      const res = await fetch("/api/auth", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ password: pwInput }),
+      });
+      const data = await res.json();
+      if (data.success) {
+        setAuthed(true);
+        setPwInput("");
+        setLoading(true);
+        loadConfig();
+      } else {
+        setAuthError(data.error || "Échec de la connexion");
+      }
+    } catch {
+      setAuthError("Erreur réseau");
+    } finally {
+      setLoggingIn(false);
+    }
+  }
+
+  async function handleLogout() {
+    await fetch("/api/auth", { method: "DELETE" });
+    setAuthed(false);
+  }
 
   // ─── Upload image ──────────────────────────────────────────
   async function handleUpload(file: File, destination: string) {
@@ -392,7 +456,8 @@ export const metadata = {
       const data = await res.json();
       if (data.success) {
         setSaved(true);
-        setTimeout(() => setSaved(false), 3000);
+        setRedeploy(!!data.redeploy);
+        setTimeout(() => setSaved(false), data.redeploy ? 8000 : 3000);
       } else {
         setError(data.error || "Erreur lors de la sauvegarde");
       }
@@ -420,6 +485,55 @@ export const metadata = {
     { id: "certifications", label: "Certifications", icon: <FiAward size={16} /> },
     { id: "images", label: "Images", icon: <FiImage size={16} /> },
   ];
+
+  if (authChecking) {
+    return (
+      <div className="min-h-screen bg-[var(--color-background)] flex items-center justify-center">
+        <FiLoader size={24} className="text-[var(--color-primary)] animate-spin" />
+      </div>
+    );
+  }
+
+  // ─── Login screen ──────────────────────────────────────────
+  if (authReq && !authed) {
+    return (
+      <div className="min-h-screen bg-[var(--color-background)] text-[var(--color-foreground)] flex items-center justify-center px-6">
+        <form
+          onSubmit={handleLogin}
+          className="w-full max-w-sm p-8 rounded-2xl bg-[var(--color-surface-light)] border border-[var(--color-border)] space-y-6"
+        >
+          <div className="text-center space-y-2">
+            <span className="text-2xl font-bold gradient-text">LM.</span>
+            <h1 className="text-lg font-semibold">Administration</h1>
+            <p className="text-sm text-[var(--color-muted)]">Entrez le mot de passe pour continuer</p>
+          </div>
+          <div>
+            <label className={labelClass}>Mot de passe</label>
+            <input
+              type="password"
+              autoFocus
+              value={pwInput}
+              onChange={(e) => setPwInput(e.target.value)}
+              className={inputClass}
+              placeholder="••••••••"
+            />
+          </div>
+          {authError && (
+            <div className="p-3 rounded-lg bg-red-500/10 border border-red-500/20 flex items-center gap-2 text-red-400 text-sm">
+              <FiAlertCircle size={14} /> {authError}
+            </div>
+          )}
+          <button
+            type="submit"
+            disabled={loggingIn || !pwInput}
+            className="w-full flex items-center justify-center gap-2 px-5 py-3 rounded-xl btn-gradient text-white text-sm font-semibold disabled:opacity-50"
+          >
+            {loggingIn ? <><FiLoader size={14} className="animate-spin" /> Connexion...</> : "Se connecter"}
+          </button>
+        </form>
+      </div>
+    );
+  }
 
   if (loading) {
     return (
@@ -464,6 +578,14 @@ export const metadata = {
             >
               Voir le site &rarr;
             </a>
+            {authReq && (
+              <button
+                onClick={handleLogout}
+                className="px-4 py-2 rounded-lg text-sm text-[var(--color-muted)] hover:text-red-400 transition-colors"
+              >
+                Déconnexion
+              </button>
+            )}
           </div>
         </div>
       </div>
@@ -484,7 +606,9 @@ export const metadata = {
         <div className="max-w-7xl mx-auto px-6 pt-4">
           <div className="p-4 rounded-xl bg-green-500/10 border border-green-500/20 flex items-center gap-3 text-green-400 text-sm">
             <FiCheck size={16} />
-            Configuration sauvegardée ! Rechargez le site pour voir les changements.
+            {redeploy
+              ? "Enregistré sur GitHub ✓ — Vercel redéploie le site. Vos changements seront visibles en ligne dans ~1-2 minutes."
+              : "Configuration sauvegardée ! Rechargez le site pour voir les changements."}
           </div>
         </div>
       )}
