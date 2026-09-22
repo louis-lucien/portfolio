@@ -230,9 +230,10 @@ export default function Hero() {
             href="#about"
             whileHover={{ scale: 1.03 }}
             whileTap={{ scale: 0.97 }}
-            className="px-8 py-4 rounded-full bg-gradient-to-r from-[var(--color-primary)] to-[var(--color-secondary)] text-[var(--color-background)] font-semibold text-sm hover:from-[var(--color-primary-light)] hover:to-[var(--color-accent)] transition-all duration-300 shadow-lg shadow-[var(--color-primary)]/10"
+            className="inline-flex items-center gap-2 px-8 py-4 rounded-full bg-gradient-to-r from-[var(--color-primary)] to-[var(--color-secondary)] text-[var(--color-background)] font-semibold text-sm hover:from-[var(--color-primary-light)] hover:to-[var(--color-accent)] transition-all duration-300 shadow-lg shadow-[var(--color-primary)]/10"
           >
             {hero.cta}
+            <FiArrowDown size={16} />
           </motion.a>
 
           {personal.socials.github && (
