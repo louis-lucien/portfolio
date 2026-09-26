@@ -314,7 +314,45 @@ export const experience = {
       role: "Data Specialist · Développeur Backend · Intégrateur API",
       company: "Énergie Rurale Africaine (ERA)",
       period: "Oct. 2025 - Aujourd'hui",
-      description: "Ma mission la plus complexe et la plus formatrice. J'ai conçu et développé de zéro une plateforme centralisée de monitoring énergétique pour le réseau national de centrales solaires et transformateurs. J'ai architecturé les pipelines IoT synchronisant des sources hétérogènes (SQL Server, API, capteurs terrain) vers PostgreSQL/TimescaleDB. J'ai automatisé les processus ETL asynchrones avec Celery, modélisé des séries temporelles à grande volumétrie, développé un module de contrôle de facturation SENELEC, conçu des indicateurs stratégiques (cos φ, pertes en ligne, couverture télé-comptage), et implémenté un système d'alertes configurables. Le résultat : des dashboards cartographiques interactifs qui permettent le pilotage décisionnel en temps réel de l'infrastructure énergétique sénégalaise.",
+      description: "**ERAPOWER — Plateforme de supervision et d’analyse des réseaux électriques ruraux**
+*Architecture logicielle · Data Engineering · IoT · Backend · Analyse de données*
+
+* **Conçu et développé une plateforme de supervision des réseaux électriques ruraux**, permettant de suivre la production solaire, les transformateurs, la distribution, les compteurs, la facturation, les interventions et la qualité du service.
+* **Connecté les équipements électriques du terrain au système d’information**, afin de collecter et centraliser automatiquement les données de production, tension, courant, énergie, disponibilité et état des équipements.
+* **Centralisé des données provenant de plusieurs sources** — équipements IoT, bases de données, systèmes externes et API — pour les transformer en informations fiables et exploitables.
+* **Développé des mécanismes de détection d’anomalies et d’alertes**, permettant d’identifier rapidement les surcharges, tensions anormales, baisses de production, problèmes de batteries ou pertes de communication.
+* **Transformé les données techniques en indicateurs métier** à travers des tableaux de bord, graphiques, cartes et systèmes d’alerte destinés au suivi opérationnel et à l’aide à la décision.
+* **Automatisé le contrôle des factures SENELEC** en confrontant les données réellement mesurées sur le réseau aux données facturées afin d’identifier les écarts.
+* **Optimisé le système de supervision**, en faisant passer le volume de requêtes d’environ **456 000 à 1 600**, soit une réduction d’environ **285×**.
+* **Réduit le temps de chargement d’une page de supervision de 13 s à 1,4 s**, sur une base contenant environ **28 millions de mesures**.
+* **Pris en charge le développement de bout en bout**, de l’acquisition des données sur le terrain jusqu'à leur traitement, leur exposition via API et leur visualisation.
+
+**Environnement :** Python · Django · Django REST Framework · PostgreSQL · TimescaleDB · SQL Server · Celery · RabbitMQ · React · TypeScript · Raspberry Pi · Modbus · IoT · API · ETL
+
+**ERACONTROLLER — Passerelle IoT pour les centrales solaires**
+*IoT · Systèmes embarqués · Acquisition de données · API · Résilience*
+
+* **Conçu une passerelle permettant de connecter les équipements électriques des centrales solaires à la plateforme centrale** et de récupérer automatiquement leurs données.
+* **Intégré différents types d’équipements et protocoles de communication**, notamment onduleurs, compteurs, batteries et capteurs.
+* **Mis en place un fonctionnement résilient hors connexion**, permettant de conserver temporairement les données sur site puis de les transmettre automatiquement lorsque la connexion est rétablie.
+* **Développé des mécanismes de supervision de la passerelle**, afin de suivre sa disponibilité, son état de fonctionnement et les éventuelles erreurs de communication.
+* **Mis en place une configuration à distance des équipements**, permettant d’adapter les paramètres d’acquisition selon les sites et les équipements.
+* **Établi la chaîne de communication entre le monde physique et le système d’information :** équipement → acquisition → stockage local → transmission → plateforme → supervision.
+
+**Environnement :** Python · Raspberry Pi · Linux · SQLite · Django · React · TypeScript · Modbus TCP · SMA Speedwire · CAN Bus · HTTP/REST · GPIO · IoT
+
+**ERASURVEY — Application mobile pour les opérations terrain**
+*Application mobile · Offline-first · Synchronisation · Géolocalisation · API*
+
+* **Conçu une application mobile destinée aux équipes terrain**, permettant de digitaliser les relevés, interventions et enquêtes réalisés sur les sites.
+* **Permis aux agents de travailler sans connexion Internet**, avec conservation locale des données directement sur le téléphone.
+* **Développé un mécanisme de synchronisation automatique** permettant de transmettre les données au système central dès que la connexion est rétablie.
+* **Géré la cohérence des données lors des synchronisations**, notamment lorsque plusieurs opérations sont réalisées hors connexion.
+* **Intégré le suivi des interventions, équipements, relevés, photos, géolocalisation et signatures**, afin de centraliser les informations collectées sur le terrain.
+* **Mis en place une architecture “terrain d’abord”**, adaptée aux zones rurales où la connectivité peut être intermittente.
+
+**Environnement :** React Native · Expo · TypeScript · FastAPI · Python · PostgreSQL · PostGIS · SQLite · Socket.IO · API REST · JWT · Géolocalisation
+",
       techs: ["Python", "Django REST", "PostgreSQL", "TimescaleDB", "Celery", "Redis", "React", "TypeScript", "IoT"],
     },
     {
