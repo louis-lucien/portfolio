@@ -300,7 +300,10 @@ export default function AdminPage() {
         .replace(/\\"/g, '"');
     };
 
-    const q = (s: string) => `"${s.replace(/"/g, '\\"')}"`;
+    // JSON.stringify produces a valid JS string literal: it escapes quotes,
+    // backslashes, newlines (\n), tabs, etc. Using a naive `"..."` template
+    // here would embed real line breaks and break the generated TS file.
+    const q = (s: string) => JSON.stringify(s ?? "");
     const arrStr = (arr: string[]) => `[${arr.map(q).join(", ")}]`;
 
     return `// ============================================================
