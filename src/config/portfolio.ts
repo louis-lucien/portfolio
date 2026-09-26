@@ -339,6 +339,13 @@ export const experience = {
       description: "Un rôle unique où j'ai piloté un projet d'IA vocale multilingue inédit : un assistant capable de fonctionner en wolof, français, anglais et arabe pour améliorer les échanges en milieu professionnel et institutionnel. J'ai coordonné les workflows collaboratifs entre équipes techniques en méthodologie Agile, intégré les API OpenAI/Whisper/ElevenLabs, et développé les landing pages Digicaisse et Proboutik en mettant l'accent sur l'UX et les performances. Ce projet m'a confirmé que l'IA la plus puissante est celle qui s'ancre dans un contexte culturel réel.",
       techs: ["Python", "OpenAI API", "Whisper", "ElevenLabs", "Angular", "NLP", "LLMs"],
     },
+    {
+      role: "Architect Logiciel",
+      company: "PAPS",
+      period: "Juillet 2025 - Octobre 2025",
+      description: "<p><strong>PAPSMARKET — Architecte Logiciel | Plateforme SaaS de gestion logistique &amp; e-commerce</strong></p><ul><li><p>Conception de l’architecture globale d’une plateforme SaaS centralisant <strong>produits, stocks, commandes, livraisons et gestion des utilisateurs</strong>.</p></li><li><p>Structuration d’une architecture modulaire autour d’une <strong>API REST centrale avec FastAPI/Python</strong>, connectée à trois interfaces React/TypeScript : <strong>Back-Office, Boutique e-commerce et Site vitrine</strong>.</p></li><li><p>Conception et structuration du modèle de données <strong>PostgreSQL</strong> avec Prisma pour assurer la cohérence et l’évolution des données métier.</p></li><li><p>Définition des interactions entre les composants applicatifs et séparation des responsabilités entre <strong>logique métier, données et interfaces utilisateur</strong>.</p></li><li><p>Mise en place des mécanismes d’<strong>authentification et d’autorisation par JWT et gestion des rôles</strong>.</p></li><li><p>Contribution à la conception de fonctionnalités métier : gestion des stocks, commandes, livraisons, clients, livreurs, abonnements et tableaux de bord analytiques.</p></li><li><p>Intégration de services externes, notamment <strong>Cloudinary</strong> pour la gestion des images et préparation d’intégrations de notification.</p></li><li><p>Prise en compte des enjeux de <strong>sécurité, maintenabilité, évolutivité et performance</strong> dans les choix d’architecture.</p></li></ul>",
+      techs: ["Python", "FastAPI", "React", "TypeScript", "PostgreSQL", "Prisma", "JWT", "REST API", "Swagger/OpenAPI", "Vite", "Tailwind CSS", "Pytest."],
+    },
   ],
 };
 
