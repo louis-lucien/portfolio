@@ -80,16 +80,36 @@ export default function Experience() {
                     className="text-sm text-[var(--color-muted)] leading-relaxed mb-5"
                   />
 
-                  <div className="flex flex-wrap gap-2">
-                    {exp.techs.map((tech) => (
-                      <span
-                        key={tech}
-                        className="px-3 py-1 rounded-lg bg-[var(--color-primary)]/[0.06] border border-[var(--color-primary)]/10 text-xs text-[var(--color-muted)]"
-                      >
-                        {tech}
-                      </span>
-                    ))}
-                  </div>
+                  {(() => {
+                    const groups = (exp as { techGroups?: { label: string; items: string[] }[] }).techGroups;
+                    const pill =
+                      "px-3 py-1 rounded-lg bg-[var(--color-primary)]/[0.06] border border-[var(--color-primary)]/10 text-xs text-[var(--color-muted)]";
+                    if (groups && groups.length > 0) {
+                      return (
+                        <div className="space-y-3">
+                          {groups.map((g) => (
+                            <div key={g.label}>
+                              <span className="block text-[11px] uppercase tracking-wider text-[var(--color-primary-light)] mb-1.5">
+                                {g.label}
+                              </span>
+                              <div className="flex flex-wrap gap-2">
+                                {g.items.filter(Boolean).map((t) => (
+                                  <span key={t} className={pill}>{t}</span>
+                                ))}
+                              </div>
+                            </div>
+                          ))}
+                        </div>
+                      );
+                    }
+                    return (
+                      <div className="flex flex-wrap gap-2">
+                        {exp.techs.map((tech) => (
+                          <span key={tech} className={pill}>{tech}</span>
+                        ))}
+                      </div>
+                    );
+                  })()}
                 </div>
               </motion.div>
             ))}

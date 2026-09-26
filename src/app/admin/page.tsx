@@ -19,6 +19,7 @@ import {
   FiChevronDown,
 } from "react-icons/fi";
 import RichTextEditor from "@/components/RichTextEditor";
+import PeriodPicker from "@/components/PeriodPicker";
 
 // ─── Types ───────────────────────────────────────────────────
 interface PersonalData {
@@ -50,6 +51,10 @@ interface ExperienceItem {
   period: string;
   description: string;
   techs: string[];
+  startDate?: string;
+  endDate?: string;
+  current?: boolean;
+  techGroups?: { label: string; items: string[] }[];
 }
 
 interface CertItem {
@@ -77,6 +82,9 @@ interface FormationItem {
   school: string;
   period: string;
   description: string;
+  startDate?: string;
+  endDate?: string;
+  current?: boolean;
 }
 
 interface TraitItem {
@@ -403,7 +411,7 @@ ${formations.map((f) => `    {
       degree: ${q(f.degree)},
       speciality: ${q(f.speciality)},
       school: ${q(f.school)},
-      period: ${q(f.period)},
+      period: ${q(f.period)},${f.startDate ? `\n      startDate: ${q(f.startDate)},` : ""}${f.endDate ? `\n      endDate: ${q(f.endDate)},` : ""}${f.current ? `\n      current: true,` : ""}
       description: ${q(f.description)},
     },`).join("\n")}
   ],
@@ -428,9 +436,9 @@ export const experience = {
 ${experiences.map((e) => `    {
       role: ${q(e.role)},
       company: ${q(e.company)},
-      period: ${q(e.period)},
+      period: ${q(e.period)},${e.startDate ? `\n      startDate: ${q(e.startDate)},` : ""}${e.endDate ? `\n      endDate: ${q(e.endDate)},` : ""}${e.current ? `\n      current: true,` : ""}
       description: ${q(e.description)},
-      techs: ${arrStr(e.techs)},
+      techs: ${arrStr(e.techs)},${e.techGroups && e.techGroups.length ? `\n      techGroups: [${e.techGroups.map((g) => `\n        { label: ${q(g.label)}, items: ${arrStr(g.items)} },`).join("")}\n      ],` : ""}
     },`).join("\n")}
   ],
 };
@@ -907,8 +915,32 @@ export const metadata = {
                     <div className="grid sm:grid-cols-2 gap-4">
                       <div><label className={labelClass}>Poste</label><input value={exp.role} onChange={(e) => { const n = [...experiences]; n[i] = { ...n[i], role: e.target.value }; setExperiences(n); }} className={inputClass} /></div>
                       <div><label className={labelClass}>Entreprise</label><input value={exp.company} onChange={(e) => { const n = [...experiences]; n[i] = { ...n[i], company: e.target.value }; setExperiences(n); }} className={inputClass} /></div>
-                      <div><label className={labelClass}>Période</label><input value={exp.period} onChange={(e) => { const n = [...experiences]; n[i] = { ...n[i], period: e.target.value }; setExperiences(n); }} className={inputClass} /></div>
-                      <div><label className={labelClass}>Technologies (virgule)</label><input value={exp.techs.join(", ")} onChange={(e) => { const n = [...experiences]; n[i] = { ...n[i], techs: e.target.value.split(",").map((t) => t.trim()) }; setExperiences(n); }} className={inputClass} /></div>
+                      <div className="sm:col-span-2">
+                        <PeriodPicker
+                          value={{ startDate: exp.startDate || "", endDate: exp.endDate || "", current: exp.current || false }}
+                          onChange={(v) => { const n = [...experiences]; n[i] = { ...n[i], startDate: v.startDate, endDate: v.endDate, current: v.current, period: v.period }; setExperiences(n); }}
+                          inputClass={inputClass}
+                          labelClass={labelClass}
+                        />
+                        {exp.period && <p className="text-[11px] text-[var(--color-dim)] mt-1">Affiché : {exp.period}</p>}
+                      </div>
+                      <div className="sm:col-span-2"><label className={labelClass}>Technologies (liste simple, virgule)</label><input value={exp.techs.join(", ")} onChange={(e) => { const n = [...experiences]; n[i] = { ...n[i], techs: e.target.value.split(",").map((t) => t.trim()) }; setExperiences(n); }} className={inputClass} /></div>
+                    </div>
+
+                    {/* Technologies par catégorie */}
+                    <div className="space-y-3 p-4 rounded-xl bg-[var(--color-surface)] border border-[var(--color-border)]">
+                      <div className="flex items-center justify-between">
+                        <label className={labelClass + " !mb-0"}>Technologies par catégorie (optionnel)</label>
+                        <button onClick={() => { const n = [...experiences]; const g = n[i].techGroups ? [...n[i].techGroups] : []; g.push({ label: "", items: [] }); n[i] = { ...n[i], techGroups: g }; setExperiences(n); }} className="text-xs text-[var(--color-primary-light)] flex items-center gap-1"><FiPlus size={12} /> Ajouter une catégorie</button>
+                      </div>
+                      {(exp.techGroups || []).map((g, gi) => (
+                        <div key={gi} className="flex flex-col sm:flex-row gap-2 items-start">
+                          <input value={g.label} placeholder="Catégorie (ex. Backend & API)" onChange={(e) => { const n = [...experiences]; const gs = [...(n[i].techGroups || [])]; gs[gi] = { ...gs[gi], label: e.target.value }; n[i] = { ...n[i], techGroups: gs }; setExperiences(n); }} className={inputClass + " sm:!w-56"} />
+                          <input value={g.items.join(", ")} placeholder="Techs séparées par des virgules" onChange={(e) => { const n = [...experiences]; const gs = [...(n[i].techGroups || [])]; gs[gi] = { ...gs[gi], items: e.target.value.split(",").map((t) => t.trim()) }; n[i] = { ...n[i], techGroups: gs }; setExperiences(n); }} className={inputClass} />
+                          <button onClick={() => { const n = [...experiences]; const gs = (n[i].techGroups || []).filter((_, j) => j !== gi); n[i] = { ...n[i], techGroups: gs }; setExperiences(n); }} className="text-[var(--color-dim)] hover:text-red-400 pt-2.5"><FiTrash2 size={14} /></button>
+                        </div>
+                      ))}
+                      <p className="text-[11px] text-[var(--color-dim)]">Si vous ajoutez des catégories, elles remplacent la liste simple sur le site (titre + pastilles par groupe).</p>
                     </div>
                     <div><label className={labelClass}>Description</label><RichTextEditor value={exp.description} onChange={(html) => { const n = [...experiences]; n[i] = { ...n[i], description: html }; setExperiences(n); }} minHeight={140} /></div>
                   </div>
@@ -959,7 +991,15 @@ export const metadata = {
                       <div><label className={labelClass}>Diplôme</label><input value={f.degree} onChange={(e) => { const n = [...formations]; n[i] = { ...n[i], degree: e.target.value }; setFormations(n); }} className={inputClass} /></div>
                       <div><label className={labelClass}>Spécialité</label><input value={f.speciality} onChange={(e) => { const n = [...formations]; n[i] = { ...n[i], speciality: e.target.value }; setFormations(n); }} className={inputClass} /></div>
                       <div><label className={labelClass}>École</label><input value={f.school} onChange={(e) => { const n = [...formations]; n[i] = { ...n[i], school: e.target.value }; setFormations(n); }} className={inputClass} /></div>
-                      <div><label className={labelClass}>Période</label><input value={f.period} onChange={(e) => { const n = [...formations]; n[i] = { ...n[i], period: e.target.value }; setFormations(n); }} className={inputClass} /></div>
+                      <div className="sm:col-span-2">
+                        <PeriodPicker
+                          value={{ startDate: f.startDate || "", endDate: f.endDate || "", current: f.current || false }}
+                          onChange={(v) => { const n = [...formations]; n[i] = { ...n[i], startDate: v.startDate, endDate: v.endDate, current: v.current, period: v.period }; setFormations(n); }}
+                          inputClass={inputClass}
+                          labelClass={labelClass}
+                        />
+                        {f.period && <p className="text-[11px] text-[var(--color-dim)] mt-1">Affiché : {f.period}</p>}
+                      </div>
                     </div>
                     <div><label className={labelClass}>Description</label><RichTextEditor value={f.description} onChange={(html) => { const n = [...formations]; n[i] = { ...n[i], description: html }; setFormations(n); }} /></div>
                   </div>
