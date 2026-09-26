@@ -5,6 +5,7 @@ import { useRef, useState } from "react";
 import Image from "next/image";
 import { FiExternalLink, FiGithub, FiArrowUpRight } from "react-icons/fi";
 import { projects } from "@/config/portfolio";
+import RichText from "@/components/RichText";
 
 export default function Projects() {
   const ref = useRef(null);
@@ -82,9 +83,10 @@ export default function Projects() {
                     {project.title}
                   </h3>
 
-                  <p className="text-sm text-[var(--color-muted)] leading-relaxed mb-6">
-                    {project.description}
-                  </p>
+                  <RichText
+                    html={project.description}
+                    className="text-sm text-[var(--color-muted)] leading-relaxed mb-6"
+                  />
 
                   <div className="flex flex-wrap gap-2 mb-5">
                     {project.tags.map((tag) => (
@@ -146,9 +148,10 @@ export default function Projects() {
                 <h3 className="text-lg font-semibold mb-2 group-hover:text-[var(--color-primary-light)] transition-colors duration-300">
                   {project.title}
                 </h3>
-                <p className="text-sm text-[var(--color-muted)] leading-relaxed mb-4">
-                  {project.description}
-                </p>
+                <RichText
+                  html={project.description}
+                  className="text-sm text-[var(--color-muted)] leading-relaxed mb-4"
+                />
                 <div className="flex flex-wrap gap-1.5">
                   {project.tags.map((tag) => (
                     <span

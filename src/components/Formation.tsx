@@ -4,6 +4,7 @@ import { motion, useInView } from "framer-motion";
 import { useRef } from "react";
 import { FiBookOpen } from "react-icons/fi";
 import { formation } from "@/config/portfolio";
+import RichText from "@/components/RichText";
 
 export default function Formation() {
   const ref = useRef(null);
@@ -117,9 +118,10 @@ export default function Formation() {
                   <p className="text-sm font-medium text-[var(--color-muted)] mb-3">
                     {item.school}
                   </p>
-                  <p className="text-sm text-[var(--color-muted)] leading-relaxed">
-                    {item.description}
-                  </p>
+                  <RichText
+                    html={item.description}
+                    className="text-sm text-[var(--color-muted)] leading-relaxed"
+                  />
                 </div>
               </motion.div>
             ))}

@@ -4,6 +4,7 @@ import { motion, useInView } from "framer-motion";
 import { useRef } from "react";
 import { FiCode, FiDatabase, FiCpu, FiTarget } from "react-icons/fi";
 import { personal, about } from "@/config/portfolio";
+import RichText from "@/components/RichText";
 
 const pillarIcons: Record<string, React.ReactNode> = {
   code: <FiCode size={24} />,
@@ -44,12 +45,11 @@ export default function About() {
             transition={{ duration: 0.8, delay: 0.2 }}
           >
             {personal.bio.map((p, i) => (
-              <p
+              <RichText
                 key={i}
+                html={p}
                 className="text-[var(--color-muted)] leading-[1.9] mb-6 text-[15px]"
-              >
-                {p}
-              </p>
+              />
             ))}
 
             {/* Vision statement */}
@@ -65,9 +65,10 @@ export default function About() {
                   Vision
                 </span>
               </div>
-              <p className="text-sm text-[var(--color-accent-light)] leading-relaxed italic">
-                &ldquo;{about.vision}&rdquo;
-              </p>
+              <RichText
+                html={about.vision}
+                className="text-sm text-[var(--color-accent-light)] leading-relaxed italic quoted"
+              />
             </motion.div>
           </motion.div>
 
@@ -85,9 +86,10 @@ export default function About() {
                   L&apos;Architecte
                 </span>
               </div>
-              <p className="text-sm text-[var(--color-muted)] leading-relaxed mb-6">
-                {about.profileType.description}
-              </p>
+              <RichText
+                html={about.profileType.description}
+                className="text-sm text-[var(--color-muted)] leading-relaxed mb-6"
+              />
               <div className="space-y-3">
                 {about.profileType.traits.map((trait, i) => (
                   <motion.div
@@ -176,9 +178,10 @@ export default function About() {
               <h3 className="text-lg font-semibold mb-3 group-hover:text-[var(--color-primary-light)] transition-colors duration-300">
                 {pillar.title}
               </h3>
-              <p className="text-sm text-[var(--color-muted)] leading-relaxed">
-                {pillar.description}
-              </p>
+              <RichText
+                html={pillar.description}
+                className="text-sm text-[var(--color-muted)] leading-relaxed"
+              />
               {/* Step indicator */}
               <div className="mt-5 flex items-center gap-2">
                 <span className="font-mono text-[10px] text-[var(--color-primary)]">

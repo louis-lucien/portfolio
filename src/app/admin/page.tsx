@@ -18,6 +18,7 @@ import {
   FiChevronUp,
   FiChevronDown,
 } from "react-icons/fi";
+import RichTextEditor from "@/components/RichTextEditor";
 
 // ─── Types ───────────────────────────────────────────────────
 interface PersonalData {
@@ -688,17 +689,15 @@ export const metadata = {
                   <label className={labelClass}>Bio (3 paragraphes)</label>
                   <div className="space-y-3">
                     {personal.bio.map((b, i) => (
-                      <textarea
+                      <RichTextEditor
                         key={i}
                         value={b}
-                        onChange={(e) => {
+                        onChange={(html) => {
                           const newBio = [...personal.bio];
-                          newBio[i] = e.target.value;
+                          newBio[i] = html;
                           setPersonal({ ...personal, bio: newBio });
                         }}
                         placeholder={`Paragraphe ${i + 1}...`}
-                        rows={3}
-                        className={inputClass + " resize-none"}
                       />
                     ))}
                   </div>
@@ -789,7 +788,7 @@ export const metadata = {
                   <span className="text-sm font-semibold text-[var(--color-primary-light)]">Profil INTJ-A</span>
                   <div>
                     <label className={labelClass}>Description du profil</label>
-                    <textarea value={profileTypeDesc} onChange={(e) => setProfileTypeDesc(e.target.value)} rows={3} className={inputClass + " resize-none"} />
+                    <RichTextEditor value={profileTypeDesc} onChange={setProfileTypeDesc} />
                   </div>
                   <div>
                     <div className="flex items-center justify-between mb-2">
@@ -808,7 +807,7 @@ export const metadata = {
                   </div>
                   <div>
                     <label className={labelClass}>Vision</label>
-                    <textarea value={aboutVision} onChange={(e) => setAboutVision(e.target.value)} rows={2} className={inputClass + " resize-none"} />
+                    <RichTextEditor value={aboutVision} onChange={setAboutVision} minHeight={80} />
                   </div>
                 </div>
 
@@ -827,7 +826,7 @@ export const metadata = {
                       <div><label className={labelClass}>Titre</label><input value={p.title} onChange={(e) => { const n = [...pillars]; n[i] = { ...n[i], title: e.target.value }; setPillars(n); }} className={inputClass} /></div>
                       <div><label className={labelClass}>Icône</label><select value={p.icon} onChange={(e) => { const n = [...pillars]; n[i] = { ...n[i], icon: e.target.value }; setPillars(n); }} className={inputClass}><option value="code">code</option><option value="database">database</option><option value="brain">brain</option><option value="terminal">terminal</option><option value="cloud">cloud</option><option value="shield">shield</option></select></div>
                     </div>
-                    <div><label className={labelClass}>Description</label><textarea value={p.description} onChange={(e) => { const n = [...pillars]; n[i] = { ...n[i], description: e.target.value }; setPillars(n); }} rows={3} className={inputClass + " resize-none"} /></div>
+                    <div><label className={labelClass}>Description</label><RichTextEditor value={p.description} onChange={(html) => { const n = [...pillars]; n[i] = { ...n[i], description: html }; setPillars(n); }} /></div>
                   </div>
                 ))}
               </>
@@ -908,7 +907,7 @@ export const metadata = {
                       <div><label className={labelClass}>Période</label><input value={exp.period} onChange={(e) => { const n = [...experiences]; n[i] = { ...n[i], period: e.target.value }; setExperiences(n); }} className={inputClass} /></div>
                       <div><label className={labelClass}>Technologies (virgule)</label><input value={exp.techs.join(", ")} onChange={(e) => { const n = [...experiences]; n[i] = { ...n[i], techs: e.target.value.split(",").map((t) => t.trim()) }; setExperiences(n); }} className={inputClass} /></div>
                     </div>
-                    <div><label className={labelClass}>Description</label><textarea value={exp.description} onChange={(e) => { const n = [...experiences]; n[i] = { ...n[i], description: e.target.value }; setExperiences(n); }} rows={4} className={inputClass + " resize-none"} /></div>
+                    <div><label className={labelClass}>Description</label><RichTextEditor value={exp.description} onChange={(html) => { const n = [...experiences]; n[i] = { ...n[i], description: html }; setExperiences(n); }} minHeight={140} /></div>
                   </div>
                 ))}
               </>
@@ -959,7 +958,7 @@ export const metadata = {
                       <div><label className={labelClass}>École</label><input value={f.school} onChange={(e) => { const n = [...formations]; n[i] = { ...n[i], school: e.target.value }; setFormations(n); }} className={inputClass} /></div>
                       <div><label className={labelClass}>Période</label><input value={f.period} onChange={(e) => { const n = [...formations]; n[i] = { ...n[i], period: e.target.value }; setFormations(n); }} className={inputClass} /></div>
                     </div>
-                    <div><label className={labelClass}>Description</label><textarea value={f.description} onChange={(e) => { const n = [...formations]; n[i] = { ...n[i], description: e.target.value }; setFormations(n); }} rows={3} className={inputClass + " resize-none"} /></div>
+                    <div><label className={labelClass}>Description</label><RichTextEditor value={f.description} onChange={(html) => { const n = [...formations]; n[i] = { ...n[i], description: html }; setFormations(n); }} /></div>
                   </div>
                 ))}
               </>
@@ -992,7 +991,7 @@ export const metadata = {
                       <div><label className={labelClass}>GitHub</label><input value={p.github} onChange={(e) => { const n = [...projectItems]; n[i] = { ...n[i], github: e.target.value }; setProjectItems(n); }} className={inputClass} /></div>
                       <div><label className={labelClass}>Live URL</label><input value={p.live} onChange={(e) => { const n = [...projectItems]; n[i] = { ...n[i], live: e.target.value }; setProjectItems(n); }} className={inputClass} /></div>
                     </div>
-                    <div><label className={labelClass}>Description</label><textarea value={p.description} onChange={(e) => { const n = [...projectItems]; n[i] = { ...n[i], description: e.target.value }; setProjectItems(n); }} rows={4} className={inputClass + " resize-none"} /></div>
+                    <div><label className={labelClass}>Description</label><RichTextEditor value={p.description} onChange={(html) => { const n = [...projectItems]; n[i] = { ...n[i], description: html }; setProjectItems(n); }} minHeight={140} /></div>
                   </div>
                 ))}
               </>

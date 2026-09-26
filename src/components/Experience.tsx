@@ -4,6 +4,7 @@ import { motion, useInView } from "framer-motion";
 import { useRef } from "react";
 import { FiBriefcase } from "react-icons/fi";
 import { experience } from "@/config/portfolio";
+import RichText from "@/components/RichText";
 
 export default function Experience() {
   const ref = useRef(null);
@@ -74,9 +75,10 @@ export default function Experience() {
                     {exp.company}
                   </span>
 
-                  <p className="text-sm text-[var(--color-muted)] leading-relaxed mb-5">
-                    {exp.description}
-                  </p>
+                  <RichText
+                    html={exp.description}
+                    className="text-sm text-[var(--color-muted)] leading-relaxed mb-5"
+                  />
 
                   <div className="flex flex-wrap gap-2">
                     {exp.techs.map((tech) => (
