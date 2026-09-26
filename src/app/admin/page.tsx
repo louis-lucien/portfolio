@@ -30,6 +30,7 @@ interface PersonalData {
   email: string;
   phone: string;
   location: string;
+  cvUrl: string;
   bio: string[];
   values: string[];
   languages: string[];
@@ -124,7 +125,7 @@ export default function AdminPage() {
   // Data states
   const [personal, setPersonal] = useState<PersonalData>({
     firstName: "", lastName: "", initials: "", title: "", tagline: "",
-    email: "", phone: "", location: "",
+    email: "", phone: "", location: "", cvUrl: "",
     bio: ["", "", ""], values: [], languages: [],
     socials: { github: "", linkedin: "", twitter: "" },
   });
@@ -179,6 +180,7 @@ export default function AdminPage() {
         if (d.personal) {
           setPersonal({
             ...d.personal,
+            cvUrl: d.personal.cvUrl || "",
             bio: d.personal.bio || ["", "", ""],
             values: d.personal.values || [],
             languages: d.personal.languages || [],
@@ -321,6 +323,7 @@ export const personal = {
   email: ${q(personal.email)},
   phone: ${q(personal.phone)},
   location: ${q(personal.location)},
+  cvUrl: ${q(personal.cvUrl || "")},
   bio: [
 ${personal.bio.map((b) => `    ${q(b)},`).join("\n")}
   ],
@@ -1062,6 +1065,39 @@ export const metadata = {
                       <p className="text-xs text-[var(--color-dim)] mt-2">500x500px recommandé, JPG ou PNG</p>
                     </div>
                   </div>
+                </div>
+
+                {/* CV upload */}
+                <div className="p-6 rounded-2xl bg-[var(--color-surface-light)] border border-[var(--color-border)]">
+                  <h3 className="text-sm font-semibold text-[var(--color-primary-light)] mb-4 flex items-center gap-2">
+                    <FiFileText size={16} /> CV (PDF)
+                  </h3>
+                  <div className="flex items-center gap-6 flex-wrap">
+                    {personal.cvUrl ? (
+                      <a href={personal.cvUrl} target="_blank" rel="noopener noreferrer" className="flex items-center gap-2 text-sm text-[var(--color-primary-light)] underline">
+                        <FiFileText size={14} /> Voir le CV actuel
+                      </a>
+                    ) : (
+                      <span className="text-xs text-[var(--color-dim)]">Aucun CV pour le moment</span>
+                    )}
+                    <label className="flex items-center gap-2 px-4 py-2.5 rounded-xl glass text-sm text-[var(--color-primary-light)] hover:bg-[var(--color-primary)]/10 transition-colors cursor-pointer">
+                      <FiImage size={14} />
+                      {uploadingTo === "documents/cv.pdf" ? "Upload en cours..." : "Choisir un PDF"}
+                      <input
+                        type="file"
+                        accept="application/pdf"
+                        className="hidden"
+                        onChange={async (e) => {
+                          const file = e.target.files?.[0];
+                          if (file) {
+                            const path = await handleUpload(file, "documents/cv.pdf");
+                            if (path) setPersonal((prev) => ({ ...prev, cvUrl: path }));
+                          }
+                        }}
+                      />
+                    </label>
+                  </div>
+                  <p className="text-xs text-[var(--color-dim)] mt-3">Après l&apos;upload, cliquez sur « Sauvegarder » pour publier le lien sur le site. Max ~4 Mo.</p>
                 </div>
 
                 {/* Certificates upload */}

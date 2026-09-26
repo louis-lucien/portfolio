@@ -9,8 +9,12 @@ import {
   FiPhone,
   FiArrowUpRight,
   FiCheckCircle,
+  FiEye,
+  FiDownload,
 } from "react-icons/fi";
 import { personal, contact } from "@/config/portfolio";
+
+const cvUrl = (personal as { cvUrl?: string }).cvUrl || "";
 
 export default function Contact() {
   const ref = useRef(null);
@@ -58,6 +62,25 @@ export default function Contact() {
           <p className="text-[var(--color-muted)] max-w-xl text-[15px] leading-relaxed">
             {contact.description}
           </p>
+          {cvUrl && (
+            <div className="flex flex-wrap gap-3 mt-8">
+              <a
+                href={cvUrl}
+                target="_blank"
+                rel="noopener noreferrer"
+                className="inline-flex items-center gap-2 px-5 py-2.5 rounded-full bg-gradient-to-r from-[var(--color-primary)] to-[var(--color-secondary)] text-[var(--color-background)] text-sm font-semibold hover:opacity-90 transition-opacity"
+              >
+                <FiEye size={15} /> Consulter mon CV
+              </a>
+              <a
+                href={cvUrl}
+                download
+                className="inline-flex items-center gap-2 px-5 py-2.5 rounded-full glass text-sm text-[var(--color-primary-light)] hover:bg-[var(--color-primary)]/10 transition-colors"
+              >
+                <FiDownload size={15} /> Télécharger
+              </a>
+            </div>
+          )}
         </motion.div>
 
         <div className="grid md:grid-cols-5 gap-12">

@@ -20,9 +20,9 @@ export async function POST(request: Request) {
       return NextResponse.json({ error: "File and destination required" }, { status: 400 });
     }
 
-    // Security: only allow writes to public/images/
+    // Security: only allow writes to public/images/ (media) or public/documents/ (CV).
     const safeDest = destination.replace(/\.\./g, "").replace(/^\//, "");
-    if (!safeDest.startsWith("images/")) {
+    if (!safeDest.startsWith("images/") && !safeDest.startsWith("documents/")) {
       return NextResponse.json({ error: "Invalid destination" }, { status: 400 });
     }
 
