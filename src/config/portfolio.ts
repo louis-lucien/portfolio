@@ -361,6 +361,19 @@ export const experience = {
       description: "<p><strong>PAPSMARKET — Architecte Logiciel | Plateforme SaaS de gestion logistique &amp; e-commerce</strong></p><ul><li><p>Conception de l’architecture globale d’une plateforme SaaS centralisant <strong>produits, stocks, commandes, livraisons et gestion des utilisateurs</strong>.</p></li><li><p>Structuration d’une architecture modulaire autour d’une <strong>API REST centrale avec FastAPI/Python</strong>, connectée à trois interfaces React/TypeScript : <strong>Back-Office, Boutique e-commerce et Site vitrine</strong>.</p></li><li><p>Conception et structuration du modèle de données <strong>PostgreSQL</strong> avec Prisma pour assurer la cohérence et l’évolution des données métier.</p></li><li><p>Définition des interactions entre les composants applicatifs et séparation des responsabilités entre <strong>logique métier, données et interfaces utilisateur</strong>.</p></li><li><p>Mise en place des mécanismes d’<strong>authentification et d’autorisation par JWT et gestion des rôles</strong>.</p></li><li><p>Contribution à la conception de fonctionnalités métier : gestion des stocks, commandes, livraisons, clients, livreurs, abonnements et tableaux de bord analytiques.</p></li><li><p>Intégration de services externes, notamment <strong>Cloudinary</strong> pour la gestion des images et préparation d’intégrations de notification.</p></li><li><p>Prise en compte des enjeux de <strong>sécurité, maintenabilité, évolutivité et performance</strong> dans les choix d’architecture.</p></li></ul>",
       techs: ["Python", "FastAPI", "React", "TypeScript", "PostgreSQL", "Prisma", "JWT", "REST API", "Swagger/OpenAPI", "Vite", "Tailwind CSS", "Pytest."],
     },
+    {
+      role: "Assistant Support",
+      company: "Suptelecom",
+      period: "Mars 2022 — Nov. 2023",
+      startDate: "2022-03",
+      endDate: "2023-11",
+      description: "<p>En tant qu’<strong>Assistant Support Informatique</strong> au sein de mon établissement, j’ai assuré l’assistance technique des apprenants et du personnel ainsi que la préparation et la maintenance de l’environnement informatique.</p><p>Mes principales missions consistaient à <strong>installer et configurer les postes de travail et les logiciels</strong>, préparer les équipements pour les cours et les activités pédagogiques, diagnostiquer et résoudre les incidents techniques, et accompagner les utilisateurs dans la prise en main des outils informatiques.</p><p>Cette expérience m’a permis de développer mes compétences en <strong>support utilisateur, installation et configuration de systèmes, maintenance informatique, résolution de problèmes et environnement réseau</strong>, tout en renforçant mon autonomie et ma capacité à intervenir rapidement face aux incidents techniques.</p>",
+      techs: [""],
+      techGroups: [
+        { label: "Support & Maintenance", items: ["Installation et configuration de postes de travail Installation et mise à jour de logiciels Maintenance et diagnostic des postes Assistance technique aux utilisateurs"] },
+        { label: "Systèmes & Réseaux", items: ["Windows Linux Configuration réseau Connexion et configuration des équipements"] },
+      ],
+    },
   ],
 };
 
