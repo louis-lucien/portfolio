@@ -195,7 +195,7 @@ export const projects = {
       category: "",
       github: "",
       live: "",
-      featured: false,
+      featured: true,
     },
   ],
 };
