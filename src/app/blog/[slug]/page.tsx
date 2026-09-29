@@ -80,10 +80,7 @@ export default async function BlogPostPage({
             </div>
           )}
 
-          <RichText
-            html={post.content}
-            className="text-[15px] leading-[1.9] text-[var(--color-muted)]"
-          />
+          <RichText html={post.content} className="article" />
         </div>
       </article>
       <Footer />

@@ -420,8 +420,50 @@ export const blog = {
       image: "",
       excerpt:
         "Architecture IoT complète pour collecter, fiabiliser et visualiser des milliers de mesures issues du terrain — même quand la connexion est instable.",
-      content:
-        "<p>Superviser un réseau électrique réparti sur de nombreux sites impose une contrainte simple mais redoutable : la donnée doit remonter de façon fiable, même quand le réseau télécom est capricieux. C'est le cœur de la plateforme ERAPOWER, que j'ai conçue et développée.</p><p>Côté terrain, des passerelles (Raspberry Pi, Linux) interrogent les équipements via Modbus, Modbus TCP, SMA Speedwire et CAN Bus, puis <b>tamponnent localement</b> les mesures lorsque la connexion tombe, pour les rejouer une fois le lien rétabli. Aucune donnée n'est perdue.</p><p>Côté serveur, l'ingestion passe par une API et une file d'attente, les séries temporelles sont stockées dans TimescaleDB, et des tableaux de bord restituent production solaire, tension, courant, état des équipements et disponibilité. Des règles et des modèles détectent les anomalies (surcharge, chute de production, perte de communication) et déclenchent des alertes actionnables.</p>",
+      content: `
+<p>Superviser un réseau électrique réparti sur de nombreux sites impose une contrainte simple mais redoutable : la donnée doit remonter de façon fiable, même lorsque le réseau télécom est instable. C'est exactement le problème que résout <strong>ERAPOWER</strong>, la plateforme de supervision que j'ai conçue et développée pour suivre production, distribution et qualité de service sur des réseaux ruraux.</p>
+<p>L'erreur classique est de croire que « temps réel » signifie « connexion permanente ». Sur le terrain, la vérité est inverse : la connexion tombe, et le système doit continuer à fonctionner. La règle qui structure toute l'architecture est donc simple — <strong>tamponner à la source, transmettre quand on peut, ne jamais perdre une mesure.</strong></p>
+
+<h3>01 · De l'équipement à la donnée : la couche terrain</h3>
+<p>Chaque site est équipé d'une passerelle (Raspberry Pi sous Linux) qui parle directement le langage des équipements. Selon le matériel, la collecte s'appuie sur plusieurs protocoles industriels :</p>
+<ul>
+<li><strong>Modbus / Modbus TCP</strong> pour les compteurs, onduleurs et automates ;</li>
+<li><strong>SMA Speedwire</strong> pour les onduleurs solaires ;</li>
+<li><strong>CAN Bus</strong> pour les systèmes embarqués et la gestion des batteries ;</li>
+<li><strong>GPIO</strong> pour les capteurs et signaux physiques bruts.</li>
+</ul>
+<p>À intervalle régulier, la passerelle interroge chaque équipement, normalise les mesures (tension, courant, énergie, état, disponibilité) et les horodate <strong>à la source</strong> — détail crucial : l'heure de la mesure ne doit jamais dépendre de l'heure d'arrivée au serveur.</p>
+
+<h3>02 · Résilience : ne jamais perdre une mesure</h3>
+<p>Quand le lien télécom tombe, la passerelle bascule en mode autonome : les mesures sont écrites dans une file locale persistante. Dès que la connexion revient, elles sont rejouées dans l'ordre, sans doublon.</p>
+<h4>Idempotence et rejeu</h4>
+<p>Chaque mesure porte un identifiant déterministe (site + équipement + horodatage). Côté serveur, réinsérer deux fois la même mesure ne crée jamais de doublon : l'ingestion est <strong>idempotente</strong>. C'est ce qui permet de rejouer sereinement plusieurs heures de données accumulées hors ligne.</p>
+
+<h3>03 · Ingestion et stockage des séries temporelles</h3>
+<p>Les mesures remontent vers une API, passent par une file d'attente, puis sont stockées dans <strong>TimescaleDB</strong> (extension time-series de PostgreSQL). Les <em>hypertables</em> partitionnent automatiquement les données par tranche de temps, et les <em>continuous aggregates</em> pré-calculent moyennes horaires et journalières pour des tableaux de bord instantanés, même sur des millions de points.</p>
+<p>La dimension géographique (position des sites, tracé du réseau) est gérée avec <strong>PostGIS</strong>, ce qui permet de croiser « quand » et « où » dans une même requête.</p>
+
+<h3>04 · Visualisation, alertes et détection d'anomalies</h3>
+<p>La donnée n'a de valeur que si elle éclaire une décision. Des tableaux de bord restituent l'état du réseau en un coup d'œil, et un moteur de règles couplé à des modèles détecte les situations à risque :</p>
+<ul>
+<li>surcharge de transformateur ou tension anormale ;</li>
+<li>chute de production solaire inexpliquée ;</li>
+<li>batterie défaillante ou perte de communication avec un site.</li>
+</ul>
+<p>Chaque anomalie déclenche une <strong>alerte actionnable</strong> — pas un simple voyant rouge, mais un message qui indique quoi vérifier et où.</p>
+
+<h3>En pratique — check-list</h3>
+<ul class="check">
+<li>Horodater les mesures à la source, jamais à l'arrivée.</li>
+<li>Tamponner localement et rejouer de façon idempotente.</li>
+<li>Choisir un stockage time-series (hypertables + agrégats continus).</li>
+<li>Séparer collecte, ingestion et traitement par une file d'attente.</li>
+<li>Transformer chaque anomalie en action concrète pour le terrain.</li>
+</ul>
+
+<h3>Conclusion</h3>
+<p>Superviser un réseau électrique en temps réel, ce n'est pas empiler des capteurs : c'est construire une chaîne fiable du capteur au tableau de bord, capable d'encaisser les coupures sans perdre une mesure. C'est cette exigence de robustesse — plus que la technologie elle-même — qui distingue une démonstration d'un système sur lequel des équipes s'appuient chaque jour.</p>
+`,
     },
     {
       slug: "assistant-vocal-multilingue-wolof",
@@ -432,8 +474,41 @@ export const blog = {
       image: "",
       excerpt:
         "Combiner Whisper, les LLMs et ElevenLabs pour fluidifier des échanges professionnels dans un contexte culturel local — au-delà de la démo.",
-      content:
-        "<p>Un assistant vocal n'a de valeur que s'il comprend réellement les gens qui lui parlent. Pour ce projet, l'enjeu était de fonctionner en wolof, français, anglais et arabe, dans un contexte professionnel concret.</p><p>Le pipeline enchaîne la transcription multilingue avec Whisper, un traitement du langage orienté intention et un modèle de langage (LLM) pour formuler des réponses, puis une synthèse vocale naturelle via ElevenLabs. Le vrai défi n'est pas technique mais culturel : gérer le code-switching, les tournures locales et les attentes des utilisateurs.</p><p>Ma conviction, illustrée par ce projet : l'IA n'est utile que si elle résout un problème réel dans un contexte donné — pas si elle impressionne en démonstration.</p>",
+      content: `
+<p>Un assistant vocal n'a de valeur que s'il comprend réellement les personnes qui lui parlent — dans leur langue, avec leurs tournures. Pour ce projet, l'objectif était de fluidifier des échanges professionnels en <strong>wolof, français, anglais et arabe</strong>, dans un contexte où le français « scolaire » ne suffit pas.</p>
+<p>La tentation, avec les outils actuels, est de tout confier à un modèle unique. La réalité d'un produit fiable est plus nuancée : c'est une <strong>chaîne</strong> de composants spécialisés, chacun choisi pour ce qu'il fait de mieux.</p>
+
+<h3>01 · Comprendre : la transcription multilingue</h3>
+<p>La première étape convertit la parole en texte avec <strong>Whisper</strong>, robuste au bruit et au multilinguisme. Le défi n'est pas technique mais linguistique : les locuteurs pratiquent le <em>code-switching</em> — ils passent du wolof au français dans la même phrase. Le pipeline doit accepter cette réalité plutôt que de la « corriger ».</p>
+
+<h3>02 · Raisonner : intention et contexte</h3>
+<p>Le texte transcrit est interprété par un <strong>modèle de langage (LLM)</strong> dont le rôle est d'extraire l'intention et de formuler une réponse utile. Ici, le <em>prompt engineering</em> est décisif : on cadre le domaine métier, on fournit le contexte, et on impose des garde-fous contre les réponses inventées.</p>
+<h4>Ancrer les réponses</h4>
+<p>Un assistant utile ne « sait » pas tout : il s'appuie sur des sources maîtrisées (base de connaissances, données métier). Mieux vaut une réponse « je vérifie » qu'une affirmation fausse énoncée avec assurance.</p>
+
+<h3>03 · Répondre : une voix naturelle</h3>
+<p>La réponse textuelle est enfin vocalisée avec <strong>ElevenLabs</strong>, pour une synthèse fluide et agréable. Une voix naturelle change tout dans l'adoption : elle transforme un outil technique en interlocuteur crédible.</p>
+
+<h3>04 · Le vrai défi : le contexte culturel</h3>
+<p>La performance brute d'un modèle ne fait pas un bon produit. Ce qui compte, c'est l'adéquation au terrain :</p>
+<ul>
+<li>gérer le mélange des langues sans le pénaliser ;</li>
+<li>respecter les tournures et le registre de politesse locaux ;</li>
+<li>rester utile même avec un audio imparfait (réseau, micro).</li>
+</ul>
+
+<h3>En pratique — check-list</h3>
+<ul class="check">
+<li>Décomposer en étapes spécialisées plutôt qu'un modèle « magique ».</li>
+<li>Assumer le code-switching au lieu de le corriger.</li>
+<li>Cadrer le LLM par le contexte métier et des garde-fous.</li>
+<li>Prévoir un repli clair quand la confiance est faible.</li>
+<li>Tester avec de vrais locuteurs, pas seulement des phrases modèles.</li>
+</ul>
+
+<h3>Conclusion</h3>
+<p>Ma conviction, illustrée par ce projet : l'IA n'est utile que si elle résout un problème réel dans un contexte donné. Un assistant vocal multilingue réussi n'est pas celui qui impressionne en démonstration, mais celui que les gens continuent d'utiliser parce qu'il les comprend vraiment.</p>
+`,
     },
     {
       slug: "timescaledb-postgis-series-temporelles-geo",
@@ -444,8 +519,38 @@ export const blog = {
       image: "",
       excerpt:
         "Stocker, agréger et interroger des millions de mesures horodatées et géolocalisées sans sacrifier les performances.",
-      content:
-        "<p>Quand chaque équipement émet des mesures en continu, une base relationnelle classique atteint vite ses limites. TimescaleDB, extension de PostgreSQL, apporte les <i>hypertables</i> et les <i>continuous aggregates</i> qui rendent les séries temporelles rapides et économes.</p><p>En combinant TimescaleDB avec PostGIS, on interroge la donnée à la fois dans le temps <b>et</b> dans l'espace : « quelle est la production moyenne par heure des sites situés dans cette zone ? » devient une requête simple et performante.</p><p>J'aborde aussi les stratégies de rétention et de compression, indispensables pour garder des coûts maîtrisés quand le volume grandit mois après mois.</p>",
+      content: `
+<p>Quand chaque équipement émet des mesures en continu, une base relationnelle classique atteint vite ses limites : les tables grossissent, les index se dégradent, et les requêtes d'agrégation ralentissent. La solution n'est pas de « ranger » manuellement, mais d'utiliser des outils pensés pour le temps et l'espace : <strong>TimescaleDB</strong> et <strong>PostGIS</strong>, deux extensions de PostgreSQL.</p>
+
+<h3>01 · Hypertables : le partitionnement automatique</h3>
+<p>Une <strong>hypertable</strong> ressemble à une table normale, mais TimescaleDB la découpe en interne en <em>chunks</em> par intervalle de temps. Les écritures récentes restent rapides, les anciennes données ne ralentissent pas les nouvelles, et les requêtes ne balaient que les tranches concernées.</p>
+
+<h3>02 · Continuous aggregates : pré-calculer l'essentiel</h3>
+<p>Recalculer une moyenne horaire sur des millions de lignes à chaque affichage est un gaspillage. Les <strong>continuous aggregates</strong> maintiennent automatiquement des vues agrégées (par heure, par jour) mises à jour de façon incrémentale.</p>
+<ul>
+<li>tableaux de bord instantanés, même sur de longues périodes ;</li>
+<li>coût de calcul amorti au fil de l'eau plutôt qu'à la demande ;</li>
+<li>données brutes conservées pour l'analyse fine.</li>
+</ul>
+
+<h3>03 · PostGIS : la dimension spatiale</h3>
+<p>En ajoutant <strong>PostGIS</strong>, chaque site porte une position géographique. On peut alors interroger le temps <strong>et</strong> l'espace dans une même requête : « quelle est la production moyenne par heure des sites situés dans cette zone ? » devient simple et performant. Indispensable pour cartographier un réseau et raisonner par secteur.</p>
+
+<h3>04 · Rétention et compression : maîtriser les coûts</h3>
+<p>Le volume grandit chaque mois ; sans stratégie, la facture aussi. TimescaleDB permet de <strong>compresser</strong> automatiquement les données anciennes (souvent 10× moins d'espace) et d'appliquer des <strong>politiques de rétention</strong> pour archiver ou supprimer au-delà d'un certain âge.</p>
+
+<h3>En pratique — check-list</h3>
+<ul class="check">
+<li>Utiliser des hypertables dès que la donnée est horodatée en continu.</li>
+<li>Créer des agrégats continus pour chaque granularité affichée.</li>
+<li>Croiser temps et espace avec PostGIS plutôt que côté application.</li>
+<li>Activer compression et rétention avant que le volume n'explose.</li>
+<li>Garder le brut pour l'analyse, servir l'agrégé pour l'affichage.</li>
+</ul>
+
+<h3>Conclusion</h3>
+<p>Bien stocker une série temporelle, c'est déjà résoudre la moitié du problème d'analyse. TimescaleDB et PostGIS transforment PostgreSQL en socle capable d'encaisser des millions de mesures géolocalisées tout en restant rapide — sans quitter l'écosystème SQL que les équipes maîtrisent déjà.</p>
+`,
     },
     {
       slug: "pipelines-donnees-resilients-celery-rabbitmq",
@@ -456,8 +561,38 @@ export const blog = {
       image: "",
       excerpt:
         "Files d'attente, idempotence et reprise sur erreur : les patterns qui garantissent qu'aucune donnée ne se perd entre la collecte et l'exploitation.",
-      content:
-        "<p>Entre le capteur et le tableau de bord, une donnée traverse plusieurs étapes qui peuvent toutes échouer. La résilience ne s'improvise pas : elle se conçoit.</p><p>Avec Celery et RabbitMQ, je découple la collecte du traitement grâce à des files d'attente. Les tâches sont rendues <b>idempotentes</b> (les rejouer ne crée pas de doublon), dotées de reprises automatiques et de files de rebut (dead-letter) pour isoler les cas problématiques sans bloquer le flux.</p><p>Le tout est instrumenté : sans observabilité, un pipeline qui « marche » est surtout un pipeline dont on ignore les silences.</p>",
+      content: `
+<p>Entre le capteur et le tableau de bord, une donnée traverse plusieurs étapes qui peuvent toutes échouer : réseau, parsing, base indisponible, pic de charge. La résilience ne s'improvise pas après coup — elle se conçoit dès l'architecture. C'est le rôle des files d'attente et des tâches asynchrones, ici avec <strong>Celery</strong> et <strong>RabbitMQ</strong>.</p>
+
+<h3>01 · Découpler avec une file d'attente</h3>
+<p>Plutôt que de traiter la donnée dans la foulée de sa réception (et de tout bloquer si une étape lente échoue), on la dépose dans une file. <strong>RabbitMQ</strong> conserve les messages, <strong>Celery</strong> les consomme à son rythme. La collecte n'est plus couplée au traitement : un pic ou une panne en aval ne fait pas perdre la donnée en amont.</p>
+
+<h3>02 · Idempotence : rejouer sans dupliquer</h3>
+<p>Dans un système distribué, un message peut être livré plus d'une fois. Une tâche <strong>idempotente</strong> produit le même résultat qu'elle soit exécutée une ou plusieurs fois — typiquement via un identifiant unique et un <em>upsert</em> plutôt qu'un <em>insert</em>. Sans idempotence, chaque reprise crée des doublons.</p>
+
+<h3>03 · Reprise sur erreur</h3>
+<p>Une tâche qui échoue ne doit ni tout bloquer, ni disparaître silencieusement :</p>
+<ul>
+<li><strong>retries</strong> automatiques avec <em>backoff</em> exponentiel pour les erreurs transitoires ;</li>
+<li><strong>dead-letter queue</strong> pour isoler les messages problématiques sans stopper le flux ;</li>
+<li>délais et limites de tentatives pour éviter les boucles infinies.</li>
+</ul>
+
+<h3>04 · Observabilité : voir les silences</h3>
+<p>Un pipeline qui « marche » est surtout un pipeline dont on ignore les problèmes. Il faut mesurer : messages en file, latence de traitement, taux d'échec, taille de la dead-letter. <strong>Sans observabilité, une panne se remarque quand il est déjà trop tard.</strong></p>
+
+<h3>En pratique — check-list</h3>
+<ul class="check">
+<li>Découpler collecte et traitement par une file d'attente.</li>
+<li>Rendre chaque tâche idempotente (identifiant + upsert).</li>
+<li>Configurer retries, backoff et dead-letter queue.</li>
+<li>Surveiller la profondeur des files et le taux d'échec.</li>
+<li>Alerter sur l'anormal, pas seulement sur l'erreur franche.</li>
+</ul>
+
+<h3>Conclusion</h3>
+<p>Un pipeline de données résilient ne se reconnaît pas quand tout va bien, mais le jour où quelque chose casse : la donnée attend patiemment, se rejoue sans doublon, et l'équipe est prévenue à temps. C'est cette tranquillité opérationnelle qui distingue un prototype d'un système de production.</p>
+`,
     },
     {
       slug: "detection-anomalies-machine-learning-energie",
@@ -467,8 +602,38 @@ export const blog = {
       image: "",
       excerpt:
         "Surcharge de transformateur, chute de production, batterie défaillante : transformer des séries de mesures en alertes fiables et actionnables.",
-      content:
-        "<p>Détecter une anomalie, c'est facile ; détecter la <b>bonne</b> anomalie sans noyer les équipes sous les fausses alertes, c'est tout l'enjeu. Sur un réseau électrique, une alerte ignorée est une alerte inutile.</p><p>Je pars des séries de mesures pour construire des indicateurs pertinents (tendances, saisonnalité, écarts au comportement attendu), puis je compare des seuils métier à des approches de détection d'anomalies plus fines. L'objectif : maximiser la détection réelle tout en réduisant drastiquement les faux positifs.</p><p>La leçon la plus utile : un bon modèle sert d'abord la décision humaine — il transforme des données techniques en signaux compréhensibles pour ceux qui interviennent sur le terrain.</p>",
+      content: `
+<p>Détecter une anomalie est facile ; détecter la <strong>bonne</strong> anomalie sans noyer les équipes sous les fausses alertes, beaucoup moins. Sur un réseau électrique, une alerte ignorée est une alerte inutile — et trop de fausses alertes finissent toutes par être ignorées.</p>
+
+<h3>01 · Des mesures aux features</h3>
+<p>Un modèle ne raisonne pas sur des mesures brutes, mais sur des <strong>indicateurs</strong> construits à partir d'elles : tendance récente, écart à la saisonnalité, variation soudaine, corrélation entre équipements. La qualité de ces <em>features</em> pèse davantage que le choix de l'algorithme.</p>
+
+<h3>02 · Seuils métier ou détection ML ?</h3>
+<p>Tout ne mérite pas du machine learning. Un seuil métier simple (« tension au-delà de X ») est lisible, prévisible et suffisant dans bien des cas. Le ML apporte de la valeur quand le signal est <strong>contextuel</strong> : une même valeur peut être normale à midi et anormale la nuit.</p>
+<ul>
+<li><strong>Seuils</strong> : simples, explicables, faciles à ajuster ;</li>
+<li><strong>Détection d'anomalies</strong> : capte les écarts au comportement attendu ;</li>
+<li>souvent, la meilleure solution combine les deux.</li>
+</ul>
+
+<h3>03 · Réduire les faux positifs</h3>
+<p>Le vrai travail consiste à maximiser la détection réelle tout en réduisant drastiquement les fausses alertes : fenêtres de confirmation (l'anomalie doit persister), regroupement des alertes liées, et prise en compte du contexte (maintenance planifiée, météo). Une alerte crédible est une alerte qu'on traite.</p>
+
+<h3>04 · De l'alerte à l'action</h3>
+<p>Une bonne détection ne s'arrête pas au score : elle produit un message compréhensible pour ceux qui interviennent — <em>quel</em> équipement, <em>quel</em> symptôme probable, <em>quoi</em> vérifier en priorité. Le modèle sert la décision humaine, il ne la remplace pas.</p>
+
+<h3>En pratique — check-list</h3>
+<ul class="check">
+<li>Investir dans les features avant l'algorithme.</li>
+<li>Commencer par des seuils, ajouter le ML là où le contexte compte.</li>
+<li>Confirmer les anomalies dans le temps pour filtrer le bruit.</li>
+<li>Mesurer le coût réel d'un faux positif et d'un faux négatif.</li>
+<li>Livrer une alerte actionnable, pas un simple score.</li>
+</ul>
+
+<h3>Conclusion</h3>
+<p>La leçon la plus utile de la détection d'anomalies n'est pas mathématique : c'est qu'un bon modèle transforme des données techniques en signaux clairs pour le terrain. Bien calibré, il devient un allié discret qui prévient au bon moment — et se fait oublier le reste du temps.</p>
+`,
     },
   ],
 };

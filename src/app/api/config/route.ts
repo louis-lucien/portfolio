@@ -34,6 +34,7 @@ export async function GET() {
         certifications: mod.certifications,
         experience: mod.experience,
         contact: mod.contact,
+        blog: mod.blog,
       },
     });
   } catch {
