@@ -102,8 +102,8 @@ export default function Projects() {
 
                 <div className="relative z-10 p-8">
                   <div className="flex items-center justify-between mb-3">
-                    <span className="inline-flex items-center rounded-full bg-[var(--color-accent)]/10 border border-[var(--color-accent)]/20 px-3 py-1 text-[10px] font-mono tracking-[0.2em] uppercase text-[var(--color-accent-light)]">
-                      En vedette &middot; {project.category}
+                    <span className="inline-flex items-center rounded-full bg-[var(--color-accent)]/15 border border-[var(--color-accent)]/25 px-3.5 py-1.5 text-xs font-semibold tracking-wide text-[var(--color-accent-light)]">
+                      {project.category}
                     </span>
                     <motion.div
                       animate={hoveredIndex === i ? { x: 3, y: -3 } : { x: 0, y: 0 }}
@@ -197,7 +197,7 @@ export default function Projects() {
               className="card rounded-xl p-6 group cursor-pointer border border-[var(--color-border)] hover:border-[var(--color-primary)]/30 hover:shadow-xl hover:shadow-[var(--color-primary)]/10 transition-all duration-500"
             >
               <div className="flex items-center justify-between mb-3">
-                <span className="text-[10px] font-mono tracking-wider uppercase text-[var(--color-accent-light)]">
+                <span className="inline-flex items-center rounded-full bg-[var(--color-accent)]/15 border border-[var(--color-accent)]/25 px-3 py-1 text-[11px] font-semibold tracking-wide text-[var(--color-accent-light)]">
                   {project.category}
                 </span>
                 <FiArrowUpRight
@@ -278,8 +278,7 @@ export default function Projects() {
               )}
 
               <div className="p-8">
-                <span className="inline-flex items-center rounded-full bg-[var(--color-accent)]/10 border border-[var(--color-accent)]/20 px-3 py-1 text-[10px] font-mono tracking-[0.2em] uppercase text-[var(--color-accent-light)] mb-4">
-                  {selected.featured ? "En vedette · " : ""}
+                <span className="inline-flex items-center rounded-full bg-[var(--color-accent)]/15 border border-[var(--color-accent)]/25 px-3.5 py-1.5 text-xs font-semibold tracking-wide text-[var(--color-accent-light)] mb-4">
                   {selected.category}
                 </span>
 
