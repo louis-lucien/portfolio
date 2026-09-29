@@ -3,7 +3,14 @@
 import { motion, useInView, AnimatePresence } from "framer-motion";
 import { useRef, useState, useEffect } from "react";
 import Image from "next/image";
-import { FiExternalLink, FiGithub, FiArrowUpRight, FiX } from "react-icons/fi";
+import {
+  FiExternalLink,
+  FiGithub,
+  FiArrowUpRight,
+  FiX,
+  FiChevronLeft,
+  FiChevronRight,
+} from "react-icons/fi";
 import { projects } from "@/config/portfolio";
 import RichText from "@/components/RichText";
 
@@ -14,17 +21,46 @@ function projectImage(p: Project): string | null {
   return typeof img === "string" && img !== "" ? img : null;
 }
 
+function projectGallery(p: Project): string[] {
+  const g = (p as Record<string, unknown>).gallery;
+  return Array.isArray(g) ? (g.filter((x) => typeof x === "string") as string[]) : [];
+}
+
 export default function Projects() {
   const ref = useRef(null);
   const isInView = useInView(ref, { once: true, margin: "-80px" });
   const [hoveredIndex, setHoveredIndex] = useState<number | null>(null);
   const [selected, setSelected] = useState<Project | null>(null);
+  const [lightbox, setLightbox] = useState<number | null>(null);
 
-  // Close on Escape + lock body scroll while the detail modal is open.
+  const gallery = selected ? projectGallery(selected) : [];
+  const closeModal = () => {
+    setSelected(null);
+    setLightbox(null);
+  };
+  const showPrev = () =>
+    setLightbox((v) => (v === null ? null : (v - 1 + gallery.length) % gallery.length));
+  const showNext = () =>
+    setLightbox((v) => (v === null ? null : (v + 1) % gallery.length));
+
+  // Keyboard: Escape closes lightbox then modal; arrows navigate the gallery.
+  // Body scroll is locked while the detail modal is open.
   useEffect(() => {
     if (!selected) return;
+    const count = projectGallery(selected).length;
     const onKey = (e: KeyboardEvent) => {
-      if (e.key === "Escape") setSelected(null);
+      if (e.key === "Escape") {
+        setLightbox((v) => {
+          if (v !== null) return null;
+          setSelected(null);
+          return null;
+        });
+      } else if (count > 0) {
+        if (e.key === "ArrowRight")
+          setLightbox((v) => (v === null ? v : (v + 1) % count));
+        if (e.key === "ArrowLeft")
+          setLightbox((v) => (v === null ? v : (v - 1 + count) % count));
+      }
     };
     window.addEventListener("keydown", onKey);
     const prev = document.body.style.overflow;
@@ -35,8 +71,23 @@ export default function Projects() {
     };
   }, [selected]);
 
-  const featured = projects.items.filter((p) => p.featured);
-  const others = projects.items.filter((p) => !p.featured);
+  const [activeCategory, setActiveCategory] = useState<string>("all");
+  const categories = Array.from(
+    new Set(projects.items.map((p) => p.category).filter(Boolean))
+  );
+  const visible =
+    activeCategory === "all"
+      ? projects.items
+      : projects.items.filter((p) => p.category === activeCategory);
+  const featured = visible.filter((p) => p.featured);
+  const others = visible.filter((p) => !p.featured);
+
+  const chipClass = (active: boolean) =>
+    `px-4 py-2 rounded-full text-sm font-medium border transition-all duration-300 ${
+      active
+        ? "bg-[var(--color-primary)] text-white border-transparent shadow-lg shadow-[var(--color-primary)]/20"
+        : "border-[var(--color-border)] text-[var(--color-muted)] hover:text-[var(--color-foreground)] hover:border-[var(--color-primary)]/40"
+    }`;
 
   return (
     <section id="projects" className="py-32 px-6" ref={ref}>
@@ -60,7 +111,34 @@ export default function Projects() {
           </p>
         </motion.div>
 
+        {/* Category filter */}
+        {categories.length > 1 && (
+          <motion.div
+            initial={{ opacity: 0, y: 20 }}
+            animate={isInView ? { opacity: 1, y: 0 } : {}}
+            transition={{ duration: 0.6, delay: 0.15 }}
+            className="flex flex-wrap gap-2.5 mb-12"
+          >
+            <button
+              onClick={() => setActiveCategory("all")}
+              className={chipClass(activeCategory === "all")}
+            >
+              Tous les projets
+            </button>
+            {categories.map((cat) => (
+              <button
+                key={cat}
+                onClick={() => setActiveCategory(cat)}
+                className={chipClass(activeCategory === cat)}
+              >
+                {cat}
+              </button>
+            ))}
+          </motion.div>
+        )}
+
         {/* Featured projects - large */}
+        {featured.length > 0 && (
         <div className="grid md:grid-cols-2 gap-6 mb-6">
           {featured.map((project, i) => {
             const img = projectImage(project);
@@ -175,8 +253,10 @@ export default function Projects() {
             );
           })}
         </div>
+        )}
 
         {/* Other projects - smaller */}
+        {others.length > 0 && (
         <div className="grid md:grid-cols-2 gap-6">
           {others.map((project, i) => (
             <motion.div
@@ -230,6 +310,7 @@ export default function Projects() {
             </motion.div>
           ))}
         </div>
+        )}
       </div>
 
       {/* Detail modal */}
@@ -243,7 +324,7 @@ export default function Projects() {
           >
             <motion.div
               className="absolute inset-0 bg-[var(--color-background)]/80 backdrop-blur-sm"
-              onClick={() => setSelected(null)}
+              onClick={closeModal}
             />
 
             <motion.div
@@ -255,7 +336,7 @@ export default function Projects() {
             >
               {/* Close */}
               <button
-                onClick={() => setSelected(null)}
+                onClick={closeModal}
                 aria-label="Fermer"
                 className="absolute top-4 right-4 z-20 w-9 h-9 rounded-full flex items-center justify-center bg-[var(--color-background)]/70 backdrop-blur text-[var(--color-muted)] hover:text-[var(--color-foreground)] hover:bg-[var(--color-background)] transition-colors"
               >
@@ -290,6 +371,37 @@ export default function Projects() {
                   html={selected.description}
                   className="text-[15px] text-[var(--color-muted)] leading-[1.8] mb-6"
                 />
+
+                {gallery.length > 0 && (
+                  <div className="mb-7">
+                    <span className="block text-[11px] uppercase tracking-wider text-[var(--color-dim)] mb-3">
+                      Aperçu du projet
+                    </span>
+                    <div className="grid grid-cols-2 sm:grid-cols-3 gap-3">
+                      {gallery.map((src, gi) => (
+                        <motion.button
+                          key={src + gi}
+                          type="button"
+                          onClick={() => setLightbox(gi)}
+                          initial={{ opacity: 0, scale: 0.9, y: 14 }}
+                          animate={{ opacity: 1, scale: 1, y: 0 }}
+                          transition={{ delay: gi * 0.07, type: "spring", stiffness: 260, damping: 22 }}
+                          whileHover={{ scale: 1.05 }}
+                          whileTap={{ scale: 0.97 }}
+                          className="group/thumb relative aspect-video overflow-hidden rounded-xl border border-[var(--color-border)] hover:border-[var(--color-primary)]/40 hover:shadow-lg hover:shadow-[var(--color-primary)]/15"
+                        >
+                          <Image
+                            src={src}
+                            alt={`${selected.title} — capture ${gi + 1}`}
+                            fill
+                            className="object-cover transition-transform duration-500 group-hover/thumb:scale-110"
+                          />
+                          <div className="absolute inset-0 bg-gradient-to-t from-black/50 via-transparent to-transparent opacity-0 group-hover/thumb:opacity-100 transition-opacity duration-300" />
+                        </motion.button>
+                      ))}
+                    </div>
+                  </div>
+                )}
 
                 {selected.tags.length > 0 && (
                   <div className="mb-7">
@@ -337,6 +449,67 @@ export default function Projects() {
               </div>
               </div>
             </motion.div>
+          </motion.div>
+        )}
+      </AnimatePresence>
+
+      {/* Lightbox */}
+      <AnimatePresence>
+        {selected && lightbox !== null && gallery[lightbox] && (
+          <motion.div
+            initial={{ opacity: 0 }}
+            animate={{ opacity: 1 }}
+            exit={{ opacity: 0 }}
+            className="fixed inset-0 z-[70] flex items-center justify-center p-4 sm:p-8 bg-black/90 backdrop-blur-sm"
+            onClick={() => setLightbox(null)}
+          >
+            <button
+              onClick={(e) => { e.stopPropagation(); setLightbox(null); }}
+              aria-label="Fermer"
+              className="absolute top-5 right-5 z-10 w-10 h-10 rounded-full flex items-center justify-center bg-white/10 text-white hover:bg-white/20 transition-colors"
+            >
+              <FiX size={20} />
+            </button>
+
+            {gallery.length > 1 && (
+              <button
+                onClick={(e) => { e.stopPropagation(); showPrev(); }}
+                aria-label="Précédent"
+                className="absolute left-3 sm:left-6 z-10 w-11 h-11 rounded-full flex items-center justify-center bg-white/10 text-white hover:bg-white/20 transition-colors"
+              >
+                <FiChevronLeft size={24} />
+              </button>
+            )}
+
+            <motion.div
+              key={lightbox}
+              initial={{ opacity: 0, scale: 0.94 }}
+              animate={{ opacity: 1, scale: 1 }}
+              transition={{ type: "spring", stiffness: 260, damping: 26 }}
+              className="relative w-full max-w-5xl aspect-video"
+              onClick={(e) => e.stopPropagation()}
+            >
+              <Image
+                src={gallery[lightbox]}
+                alt={`${selected.title} — capture ${lightbox + 1}`}
+                fill
+                className="object-contain"
+              />
+            </motion.div>
+
+            {gallery.length > 1 && (
+              <button
+                onClick={(e) => { e.stopPropagation(); showNext(); }}
+                aria-label="Suivant"
+                className="absolute right-3 sm:right-6 z-10 w-11 h-11 rounded-full flex items-center justify-center bg-white/10 text-white hover:bg-white/20 transition-colors"
+              >
+                <FiChevronRight size={24} />
+              </button>
+            )}
+
+            <span className="absolute bottom-5 left-1/2 -translate-x-1/2 text-xs text-white/70">
+              {lightbox + 1} / {gallery.length}
+            </span>
           </motion.div>
         )}
       </AnimatePresence>

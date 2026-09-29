@@ -24,9 +24,16 @@ export default function Contact() {
 
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
+    const subject = encodeURIComponent(
+      `Portfolio — message de ${form.name || "un visiteur"}`
+    );
+    const body = encodeURIComponent(
+      `Nom : ${form.name}\nEmail : ${form.email}\n\n${form.message}`
+    );
+    // Open the visitor's email client, pre-filled to the owner's address.
+    window.location.href = `mailto:${personal.email}?subject=${subject}&body=${body}`;
     setSubmitted(true);
-    setTimeout(() => setSubmitted(false), 3000);
-    setForm({ name: "", email: "", message: "" });
+    setTimeout(() => setSubmitted(false), 5000);
   };
 
   const infos = [
@@ -212,7 +219,7 @@ export default function Contact() {
             >
               {submitted ? (
                 <>
-                  <FiCheckCircle size={18} /> Message envoyé !
+                  <FiCheckCircle size={18} /> Ouverture de votre messagerie…
                 </>
               ) : (
                 <>
@@ -220,6 +227,18 @@ export default function Contact() {
                 </>
               )}
             </motion.button>
+
+            <p className="text-xs text-[var(--color-dim)] text-center">
+              Le bouton ouvre votre application email pré-remplie. Vous pouvez
+              aussi m&apos;écrire directement à{" "}
+              <a
+                href={`mailto:${personal.email}`}
+                className="text-[var(--color-primary-light)] hover:underline"
+              >
+                {personal.email}
+              </a>
+              .
+            </p>
           </motion.form>
         </div>
       </div>

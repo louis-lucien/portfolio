@@ -409,42 +409,66 @@ export const metadata = {
 export const blog = {
   heading: "Blog",
   description:
-    "Découvrez mes articles sur le développement web, la data science et l'intelligence artificielle",
+    "Retours d'expérience et repères techniques sur la data engineering, l'IoT, l'intelligence artificielle et la mise en production de systèmes fiables.",
   posts: [
     {
-      slug: "securite-gouvernance-donnees",
+      slug: "supervision-reseau-electrique-temps-reel",
       title:
-        "Sécurité et gouvernance des données : repères pour les équipes produit",
-      date: "2024-11-20",
-      readTime: "14 min",
-      image: "",
-      excerpt:
-        "Du cadre institutionnel sénégalais aux contrôles concrets côté application : définitions utiles, responsabilités et bonnes pratiques pour protéger la donnée.",
-      content:
-        "<p>La gouvernance des données n'est pas qu'une affaire de conformité : c'est un socle de confiance entre une équipe produit et ses utilisateurs.</p><p>Cet article propose des repères concrets, du cadre institutionnel aux contrôles applicatifs : classification des données, gestion des accès, chiffrement, traçabilité et responsabilités des différents acteurs.</p>",
-    },
-    {
-      slug: "analyse-predictive-apprentissage-automatique",
-      title:
-        "Analyse prédictive et apprentissage automatique : du concept au service",
-      date: "2025-01-02",
-      readTime: "13 min",
-      image: "",
-      excerpt:
-        "Clarifier régression / classification, pipeline de données, évaluation et limites ; un exemple orienté mise en production plutôt que théorie.",
-      content:
-        "<p>Passer d'un notebook à un service en production change tout : qualité des données, évaluation honnête, monitoring et boucle de réentraînement.</p><p>On clarifie les notions de régression et de classification, on construit un pipeline de données réaliste, puis on discute des limites et des pièges fréquents.</p>",
-    },
-    {
-      slug: "microservices-et-donnees",
-      title: "Microservices et données : patterns réalistes pour des équipes web",
-      date: "2025-02-05",
+        "Superviser un réseau électrique en temps réel : de la donnée terrain au tableau de bord",
+      date: "2025-03-10",
       readTime: "12 min",
       image: "",
       excerpt:
-        "Bounded contexts, cohérence des données, sagas, idempotence, API gateway et observabilité : les patterns qui tiennent vraiment en production.",
+        "Architecture IoT complète pour collecter, fiabiliser et visualiser des milliers de mesures issues du terrain — même quand la connexion est instable.",
       content:
-        "<p>Les microservices résolvent des problèmes d'organisation autant que de technique. Encore faut-il maîtriser la donnée qui circule entre eux.</p><p>On explore les bounded contexts, la cohérence éventuelle, les sagas, l'idempotence, le rôle de l'API gateway et l'observabilité indispensable au diagnostic.</p>",
+        "<p>Superviser un réseau électrique réparti sur de nombreux sites impose une contrainte simple mais redoutable : la donnée doit remonter de façon fiable, même quand le réseau télécom est capricieux. C'est le cœur de la plateforme ERAPOWER, que j'ai conçue et développée.</p><p>Côté terrain, des passerelles (Raspberry Pi, Linux) interrogent les équipements via Modbus, Modbus TCP, SMA Speedwire et CAN Bus, puis <b>tamponnent localement</b> les mesures lorsque la connexion tombe, pour les rejouer une fois le lien rétabli. Aucune donnée n'est perdue.</p><p>Côté serveur, l'ingestion passe par une API et une file d'attente, les séries temporelles sont stockées dans TimescaleDB, et des tableaux de bord restituent production solaire, tension, courant, état des équipements et disponibilité. Des règles et des modèles détectent les anomalies (surcharge, chute de production, perte de communication) et déclenchent des alertes actionnables.</p>",
+    },
+    {
+      slug: "assistant-vocal-multilingue-wolof",
+      title:
+        "Un assistant vocal multilingue (wolof, français) : l'IA au service d'un contexte réel",
+      date: "2025-02-12",
+      readTime: "11 min",
+      image: "",
+      excerpt:
+        "Combiner Whisper, les LLMs et ElevenLabs pour fluidifier des échanges professionnels dans un contexte culturel local — au-delà de la démo.",
+      content:
+        "<p>Un assistant vocal n'a de valeur que s'il comprend réellement les gens qui lui parlent. Pour ce projet, l'enjeu était de fonctionner en wolof, français, anglais et arabe, dans un contexte professionnel concret.</p><p>Le pipeline enchaîne la transcription multilingue avec Whisper, un traitement du langage orienté intention et un modèle de langage (LLM) pour formuler des réponses, puis une synthèse vocale naturelle via ElevenLabs. Le vrai défi n'est pas technique mais culturel : gérer le code-switching, les tournures locales et les attentes des utilisateurs.</p><p>Ma conviction, illustrée par ce projet : l'IA n'est utile que si elle résout un problème réel dans un contexte donné — pas si elle impressionne en démonstration.</p>",
+    },
+    {
+      slug: "timescaledb-postgis-series-temporelles-geo",
+      title:
+        "TimescaleDB et PostGIS : des séries temporelles géolocalisées à grande échelle",
+      date: "2025-01-20",
+      readTime: "10 min",
+      image: "",
+      excerpt:
+        "Stocker, agréger et interroger des millions de mesures horodatées et géolocalisées sans sacrifier les performances.",
+      content:
+        "<p>Quand chaque équipement émet des mesures en continu, une base relationnelle classique atteint vite ses limites. TimescaleDB, extension de PostgreSQL, apporte les <i>hypertables</i> et les <i>continuous aggregates</i> qui rendent les séries temporelles rapides et économes.</p><p>En combinant TimescaleDB avec PostGIS, on interroge la donnée à la fois dans le temps <b>et</b> dans l'espace : « quelle est la production moyenne par heure des sites situés dans cette zone ? » devient une requête simple et performante.</p><p>J'aborde aussi les stratégies de rétention et de compression, indispensables pour garder des coûts maîtrisés quand le volume grandit mois après mois.</p>",
+    },
+    {
+      slug: "pipelines-donnees-resilients-celery-rabbitmq",
+      title:
+        "Pipelines de données résilients : Celery, RabbitMQ et l'art de ne rien perdre",
+      date: "2024-12-15",
+      readTime: "9 min",
+      image: "",
+      excerpt:
+        "Files d'attente, idempotence et reprise sur erreur : les patterns qui garantissent qu'aucune donnée ne se perd entre la collecte et l'exploitation.",
+      content:
+        "<p>Entre le capteur et le tableau de bord, une donnée traverse plusieurs étapes qui peuvent toutes échouer. La résilience ne s'improvise pas : elle se conçoit.</p><p>Avec Celery et RabbitMQ, je découple la collecte du traitement grâce à des files d'attente. Les tâches sont rendues <b>idempotentes</b> (les rejouer ne crée pas de doublon), dotées de reprises automatiques et de files de rebut (dead-letter) pour isoler les cas problématiques sans bloquer le flux.</p><p>Le tout est instrumenté : sans observabilité, un pipeline qui « marche » est surtout un pipeline dont on ignore les silences.</p>",
+    },
+    {
+      slug: "detection-anomalies-machine-learning-energie",
+      title: "Détecter les anomalies énergétiques avec le machine learning",
+      date: "2024-11-18",
+      readTime: "10 min",
+      image: "",
+      excerpt:
+        "Surcharge de transformateur, chute de production, batterie défaillante : transformer des séries de mesures en alertes fiables et actionnables.",
+      content:
+        "<p>Détecter une anomalie, c'est facile ; détecter la <b>bonne</b> anomalie sans noyer les équipes sous les fausses alertes, c'est tout l'enjeu. Sur un réseau électrique, une alerte ignorée est une alerte inutile.</p><p>Je pars des séries de mesures pour construire des indicateurs pertinents (tendances, saisonnalité, écarts au comportement attendu), puis je compare des seuils métier à des approches de détection d'anomalies plus fines. L'objectif : maximiser la détection réelle tout en réduisant drastiquement les faux positifs.</p><p>La leçon la plus utile : un bon modèle sert d'abord la décision humaine — il transforme des données techniques en signaux compréhensibles pour ceux qui interviennent sur le terrain.</p>",
     },
   ],
 };

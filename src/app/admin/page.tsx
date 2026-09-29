@@ -74,6 +74,7 @@ interface ProjectItem {
   live: string;
   featured: boolean;
   image?: string;
+  gallery?: string[];
 }
 
 interface FormationItem {
@@ -166,7 +167,7 @@ export default function AdminPage() {
   const [blogPosts, setBlogPosts] = useState<BlogPost[]>([]);
   const [blogHeading, setBlogHeading] = useState("Blog");
   const [blogDescription, setBlogDescription] = useState(
-    "Découvrez mes articles sur le développement web, la data science et l'intelligence artificielle"
+    "Retours d'expérience et repères techniques sur la data engineering, l'IoT, l'intelligence artificielle et la mise en production de systèmes fiables."
   );
   const [certs, setCerts] = useState<CertItem[]>([]);
   const [profileTypeDesc, setProfileTypeDesc] = useState("Esprit stratégique, analytique, visionnaire. L'INTJ-A ne se contente pas de résoudre des problèmes — il les anticipe et conçoit des systèmes pour les prévenir.");
@@ -428,7 +429,7 @@ ${projectItems.map((p) => `    {
       category: ${q(p.category)},
       github: ${q(p.github)},
       live: ${q(p.live)},
-      featured: ${p.featured},${p.image ? `\n      image: ${q(p.image)},` : ""}
+      featured: ${p.featured},${p.image ? `\n      image: ${q(p.image)},` : ""}${p.gallery && p.gallery.length ? `\n      gallery: ${arrStr(p.gallery)},` : ""}
     },`).join("\n")}
   ],
 };
@@ -1109,6 +1110,37 @@ export const metadata = {
                       <div><label className={labelClass}>Live URL</label><input value={p.live} onChange={(e) => { const n = [...projectItems]; n[i] = { ...n[i], live: e.target.value }; setProjectItems(n); }} className={inputClass} /></div>
                     </div>
                     <div><label className={labelClass}>Description</label><RichTextEditor value={p.description} onChange={(html) => { const n = [...projectItems]; n[i] = { ...n[i], description: html }; setProjectItems(n); }} minHeight={140} /></div>
+
+                    <div>
+                      <div className="flex items-center justify-between mb-2 flex-wrap gap-2">
+                        <label className={labelClass + " !mb-0"}>Captures d&apos;écran (galerie, optionnel)</label>
+                        <label className="flex items-center gap-2 px-3 py-2 rounded-xl glass text-xs text-[var(--color-primary-light)] hover:bg-[var(--color-primary)]/10 transition-colors cursor-pointer">
+                          <FiImage size={13} />
+                          {uploadingTo?.startsWith("images/projects/gallery-") ? "Upload..." : "Ajouter des images"}
+                          <input type="file" accept="image/*" multiple className="hidden" onChange={async (e) => {
+                            const files = Array.from(e.target.files || []);
+                            for (const file of files) {
+                              const dest = `images/projects/gallery-${Date.now()}-${file.name.replace(/[^a-zA-Z0-9._-]/g, "-")}`;
+                              const path = await handleUpload(file, dest);
+                              if (path) setProjectItems((prev) => { const n = [...prev]; n[i] = { ...n[i], gallery: [...(n[i].gallery || []), path] }; return n; });
+                            }
+                          }} />
+                        </label>
+                      </div>
+                      {p.gallery && p.gallery.length > 0 ? (
+                        <div className="flex flex-wrap gap-3">
+                          {p.gallery.map((src, gi) => (
+                            <div key={gi} className="relative group">
+                              {/* eslint-disable-next-line @next/next/no-img-element */}
+                              <img src={src} alt="" className="h-20 w-28 object-cover rounded-lg border border-[var(--color-border)]" />
+                              <button onClick={() => { const n = [...projectItems]; n[i] = { ...n[i], gallery: (n[i].gallery || []).filter((_, j) => j !== gi) }; setProjectItems(n); }} className="absolute -top-2 -right-2 w-6 h-6 rounded-full bg-red-500/90 text-white flex items-center justify-center opacity-0 group-hover:opacity-100 transition-opacity" title="Supprimer"><FiTrash2 size={11} /></button>
+                            </div>
+                          ))}
+                        </div>
+                      ) : (
+                        <p className="text-xs text-[var(--color-dim)]">Aucune capture. Ajoutez des images pour créer une galerie animée dans le détail du projet.</p>
+                      )}
+                    </div>
                   </div>
                 ))}
               </>
