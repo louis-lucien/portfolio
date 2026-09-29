@@ -87,6 +87,16 @@ interface FormationItem {
   current?: boolean;
 }
 
+interface BlogPost {
+  slug: string;
+  title: string;
+  date: string;
+  readTime: string;
+  excerpt: string;
+  content: string;
+  image?: string;
+}
+
 interface TraitItem {
   letter: string;
   name: string;
@@ -110,7 +120,17 @@ interface SkillCategory {
   items: SkillItem[];
 }
 
-type Tab = "personal" | "hero" | "pillars" | "skills" | "experience" | "formation" | "projects" | "certifications" | "images";
+type Tab = "personal" | "hero" | "pillars" | "skills" | "experience" | "formation" | "projects" | "blog" | "certifications" | "images";
+
+// URL-friendly slug from a title (lowercase, no accents, dashes).
+function slugify(s: string): string {
+  return (s || "")
+    .toLowerCase()
+    .normalize("NFD")
+    .replace(/[̀-ͯ]/g, "")
+    .replace(/[^a-z0-9]+/g, "-")
+    .replace(/^-+|-+$/g, "");
+}
 
 // ─── Component ───────────────────────────────────────────────
 export default function AdminPage() {
@@ -143,6 +163,11 @@ export default function AdminPage() {
   const [experiences, setExperiences] = useState<ExperienceItem[]>([]);
   const [formations, setFormations] = useState<FormationItem[]>([]);
   const [projectItems, setProjectItems] = useState<ProjectItem[]>([]);
+  const [blogPosts, setBlogPosts] = useState<BlogPost[]>([]);
+  const [blogHeading, setBlogHeading] = useState("Blog");
+  const [blogDescription, setBlogDescription] = useState(
+    "Découvrez mes articles sur le développement web, la data science et l'intelligence artificielle"
+  );
   const [certs, setCerts] = useState<CertItem[]>([]);
   const [profileTypeDesc, setProfileTypeDesc] = useState("Esprit stratégique, analytique, visionnaire. L'INTJ-A ne se contente pas de résoudre des problèmes — il les anticipe et conçoit des systèmes pour les prévenir.");
   const [traits, setTraits] = useState<TraitItem[]>([
@@ -165,7 +190,7 @@ export default function AdminPage() {
   const [showTraitValues, setShowTraitValues] = useState(true);
 
   const [uploadingTo, setUploadingTo] = useState<string | null>(null);
-  const [images, setImages] = useState<Record<string, string[]>>({ profile: [], certs: [], projects: [] });
+  const [images, setImages] = useState<Record<string, string[]>>({ profile: [], certs: [], projects: [], blog: [] });
   const bottomRef = useRef<HTMLDivElement>(null);
 
   const scrollToNew = () => {
@@ -199,6 +224,9 @@ export default function AdminPage() {
         if (d.experience?.items) setExperiences(d.experience.items);
         if (d.formation?.items) setFormations(d.formation.items);
         if (d.projects?.items) setProjectItems(d.projects.items);
+        if (d.blog?.posts) setBlogPosts(d.blog.posts);
+        if (d.blog?.heading) setBlogHeading(d.blog.heading);
+        if (d.blog?.description) setBlogDescription(d.blog.description);
         if (d.certifications?.items) setCerts(d.certifications.items);
         if (d.about?.profileType?.description) setProfileTypeDesc(d.about.profileType.description);
         if (d.about?.profileType?.traits) setTraits(d.about.profileType.traits);
@@ -445,6 +473,21 @@ ${experiences.map((e) => `    {
   ],
 };
 
+export const blog = {
+  heading: ${q(blogHeading)},
+  description: ${q(blogDescription)},
+  posts: [
+${blogPosts.map((p) => `    {
+      slug: ${q(p.slug)},
+      title: ${q(p.title)},
+      date: ${q(p.date)},
+      readTime: ${q(p.readTime)},
+      excerpt: ${q(p.excerpt)},
+      content: ${q(p.content)},${p.image ? `\n      image: ${q(p.image)},` : ""}
+    },`).join("\n")}
+  ],
+};
+
 export const contact = {
   heading: "Contact",
   description: "Un projet data, une mission IA, une collaboration technique ? Je suis disponible pour transformer vos données en décisions.",
@@ -499,6 +542,7 @@ export const metadata = {
     { id: "experience", label: "Expérience", icon: <FiBriefcase size={16} /> },
     { id: "formation", label: "Formation", icon: <FiFileText size={16} /> },
     { id: "projects", label: "Projets", icon: <FiCode size={16} /> },
+    { id: "blog" as Tab, label: "Blog", icon: <FiFileText size={16} /> },
     { id: "certifications", label: "Certifications", icon: <FiAward size={16} /> },
     { id: "images", label: "Images", icon: <FiImage size={16} /> },
   ];
@@ -1065,6 +1109,64 @@ export const metadata = {
                       <div><label className={labelClass}>Live URL</label><input value={p.live} onChange={(e) => { const n = [...projectItems]; n[i] = { ...n[i], live: e.target.value }; setProjectItems(n); }} className={inputClass} /></div>
                     </div>
                     <div><label className={labelClass}>Description</label><RichTextEditor value={p.description} onChange={(html) => { const n = [...projectItems]; n[i] = { ...n[i], description: html }; setProjectItems(n); }} minHeight={140} /></div>
+                  </div>
+                ))}
+              </>
+            )}
+
+            {/* ═══════ BLOG ═══════ */}
+            {activeTab === "blog" && (
+              <>
+                <div className="flex items-center justify-between flex-wrap gap-3">
+                  <h2 className="text-2xl font-bold">Blog</h2>
+                  <button onClick={() => { setBlogPosts([...blogPosts, { slug: "", title: "", date: "", readTime: "", excerpt: "", content: "", image: "" }]); scrollToNew(); }} className="flex items-center gap-2 px-4 py-2 rounded-xl glass text-sm text-[var(--color-primary-light)]"><FiPlus size={14} /> Ajouter un article</button>
+                </div>
+
+                <div className="grid sm:grid-cols-2 gap-4">
+                  <div><label className={labelClass}>Titre de la section</label><input value={blogHeading} onChange={(e) => setBlogHeading(e.target.value)} className={inputClass} /></div>
+                  <div><label className={labelClass}>Description de la section</label><input value={blogDescription} onChange={(e) => setBlogDescription(e.target.value)} className={inputClass} /></div>
+                </div>
+
+                {blogPosts.map((p, i) => (
+                  <div key={i} className="p-6 rounded-2xl bg-[var(--color-surface-light)] border border-[var(--color-border)] space-y-4">
+                    <div className="flex items-center justify-between">
+                      <div className="flex items-center gap-2">
+                        <span className="text-sm font-semibold text-[var(--color-primary-light)]">Article {i + 1}</span>
+                        <div className="flex items-center gap-1">
+                          <button onClick={() => { if (i === 0) return; const n = [...blogPosts]; [n[i - 1], n[i]] = [n[i], n[i - 1]]; setBlogPosts(n); }} disabled={i === 0} className="p-1 rounded text-[var(--color-dim)] hover:text-[var(--color-primary-light)] disabled:opacity-20 disabled:cursor-not-allowed transition-colors" title="Monter"><FiChevronUp size={14} /></button>
+                          <button onClick={() => { if (i === blogPosts.length - 1) return; const n = [...blogPosts]; [n[i], n[i + 1]] = [n[i + 1], n[i]]; setBlogPosts(n); }} disabled={i === blogPosts.length - 1} className="p-1 rounded text-[var(--color-dim)] hover:text-[var(--color-primary-light)] disabled:opacity-20 disabled:cursor-not-allowed transition-colors" title="Descendre"><FiChevronDown size={14} /></button>
+                        </div>
+                      </div>
+                      <button onClick={() => setBlogPosts(blogPosts.filter((_, j) => j !== i))} className="text-[var(--color-dim)] hover:text-red-400"><FiTrash2 size={14} /></button>
+                    </div>
+
+                    <div className="grid sm:grid-cols-2 gap-4">
+                      <div className="sm:col-span-2"><label className={labelClass}>Titre</label><input value={p.title} onChange={(e) => { const n = [...blogPosts]; const title = e.target.value; const manual = n[i].slug && n[i].slug !== slugify(n[i].title); n[i] = { ...n[i], title, slug: manual ? n[i].slug : slugify(title) }; setBlogPosts(n); }} className={inputClass} /></div>
+                      <div><label className={labelClass}>Slug (URL)</label><input value={p.slug} onChange={(e) => { const n = [...blogPosts]; n[i] = { ...n[i], slug: e.target.value.toLowerCase().replace(/\s+/g, "-").replace(/[^a-z0-9-]/g, "") }; setBlogPosts(n); }} className={inputClass} /></div>
+                      <div><label className={labelClass}>Date</label><input type="date" value={p.date} onChange={(e) => { const n = [...blogPosts]; n[i] = { ...n[i], date: e.target.value }; setBlogPosts(n); }} className={inputClass} /></div>
+                      <div><label className={labelClass}>Temps de lecture</label><input value={p.readTime} placeholder="14 min" onChange={(e) => { const n = [...blogPosts]; n[i] = { ...n[i], readTime: e.target.value }; setBlogPosts(n); }} className={inputClass} /></div>
+                      <div className="sm:col-span-2">
+                        <label className={labelClass}>Image de couverture</label>
+                        <div className="flex flex-wrap items-center gap-3">
+                          <select value={p.image || ""} onChange={(e) => { const n = [...blogPosts]; n[i] = { ...n[i], image: e.target.value }; setBlogPosts(n); }} className={inputClass + " sm:flex-1"}>
+                            <option value="">-- Aucune / sélectionner --</option>
+                            {(images.blog || []).map((src) => (<option key={src} value={src}>{src.split("/").pop()}</option>))}
+                          </select>
+                          <label className="flex items-center gap-2 px-4 py-2.5 rounded-xl glass text-sm text-[var(--color-primary-light)] hover:bg-[var(--color-primary)]/10 transition-colors cursor-pointer whitespace-nowrap">
+                            <FiImage size={14} />
+                            {uploadingTo?.startsWith("images/blog/") ? "Upload..." : "Uploader"}
+                            <input type="file" accept="image/*" className="hidden" onChange={async (e) => { const file = e.target.files?.[0]; if (file) { const dest = `images/blog/${Date.now()}-${file.name.replace(/[^a-zA-Z0-9._-]/g, "-")}`; const path = await handleUpload(file, dest); if (path) { const n = [...blogPosts]; n[i] = { ...n[i], image: path }; setBlogPosts(n); } } }} />
+                          </label>
+                        </div>
+                        {p.image && (
+                          // eslint-disable-next-line @next/next/no-img-element
+                          <img src={p.image} alt="Aperçu" className="mt-3 h-24 rounded-lg object-cover border border-[var(--color-border)]" />
+                        )}
+                      </div>
+                    </div>
+
+                    <div><label className={labelClass}>Extrait (résumé court)</label><textarea value={p.excerpt} onChange={(e) => { const n = [...blogPosts]; n[i] = { ...n[i], excerpt: e.target.value }; setBlogPosts(n); }} rows={2} className={inputClass + " resize-none"} /></div>
+                    <div><label className={labelClass}>Contenu de l&apos;article</label><RichTextEditor value={p.content} onChange={(html) => { const n = [...blogPosts]; n[i] = { ...n[i], content: html }; setBlogPosts(n); }} minHeight={220} /></div>
                   </div>
                 ))}
               </>

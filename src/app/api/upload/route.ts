@@ -63,7 +63,7 @@ export async function GET() {
     return NextResponse.json({ error: "Non autorisé" }, { status: 401 });
   }
 
-  const result: Record<string, string[]> = { profile: [], certs: [], projects: [] };
+  const result: Record<string, string[]> = { profile: [], certs: [], projects: [], blog: [] };
 
   try {
     if (isGithubMode()) {
@@ -81,6 +81,10 @@ export async function GET() {
       result.projects = projects
         .filter((e) => e.type === "file" && IMG_RE.test(e.name))
         .map((e) => `/images/projects/${e.name}`);
+      const blog = await listDir("public/images/blog");
+      result.blog = blog
+        .filter((e) => e.type === "file" && IMG_RE.test(e.name))
+        .map((e) => `/images/blog/${e.name}`);
 
       return NextResponse.json(result);
     }
@@ -101,6 +105,10 @@ export async function GET() {
     try {
       const files = await fs.readdir(path.join(imagesDir, "projects"));
       result.projects = files.filter((f) => IMG_RE.test(f)).map((f) => `/images/projects/${f}`);
+    } catch {}
+    try {
+      const files = await fs.readdir(path.join(imagesDir, "blog"));
+      result.blog = files.filter((f) => IMG_RE.test(f)).map((f) => `/images/blog/${f}`);
     } catch {}
 
     return NextResponse.json(result);
