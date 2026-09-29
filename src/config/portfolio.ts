@@ -405,3 +405,46 @@ export const metadata = {
   title: `${personal.firstName} ${personal.lastName} — ${personal.title}`,
   description: hero.subtitle,
 };
+
+export const blog = {
+  heading: "Blog",
+  description:
+    "Découvrez mes articles sur le développement web, la data science et l'intelligence artificielle",
+  posts: [
+    {
+      slug: "securite-gouvernance-donnees",
+      title:
+        "Sécurité et gouvernance des données : repères pour les équipes produit",
+      date: "2024-11-20",
+      readTime: "14 min",
+      image: "",
+      excerpt:
+        "Du cadre institutionnel sénégalais aux contrôles concrets côté application : définitions utiles, responsabilités et bonnes pratiques pour protéger la donnée.",
+      content:
+        "<p>La gouvernance des données n'est pas qu'une affaire de conformité : c'est un socle de confiance entre une équipe produit et ses utilisateurs.</p><p>Cet article propose des repères concrets, du cadre institutionnel aux contrôles applicatifs : classification des données, gestion des accès, chiffrement, traçabilité et responsabilités des différents acteurs.</p>",
+    },
+    {
+      slug: "analyse-predictive-apprentissage-automatique",
+      title:
+        "Analyse prédictive et apprentissage automatique : du concept au service",
+      date: "2025-01-02",
+      readTime: "13 min",
+      image: "",
+      excerpt:
+        "Clarifier régression / classification, pipeline de données, évaluation et limites ; un exemple orienté mise en production plutôt que théorie.",
+      content:
+        "<p>Passer d'un notebook à un service en production change tout : qualité des données, évaluation honnête, monitoring et boucle de réentraînement.</p><p>On clarifie les notions de régression et de classification, on construit un pipeline de données réaliste, puis on discute des limites et des pièges fréquents.</p>",
+    },
+    {
+      slug: "microservices-et-donnees",
+      title: "Microservices et données : patterns réalistes pour des équipes web",
+      date: "2025-02-05",
+      readTime: "12 min",
+      image: "",
+      excerpt:
+        "Bounded contexts, cohérence des données, sagas, idempotence, API gateway et observabilité : les patterns qui tiennent vraiment en production.",
+      content:
+        "<p>Les microservices résolvent des problèmes d'organisation autant que de technique. Encore faut-il maîtriser la donnée qui circule entre eux.</p><p>On explore les bounded contexts, la cohérence éventuelle, les sagas, l'idempotence, le rôle de l'API gateway et l'observabilité indispensable au diagnostic.</p>",
+    },
+  ],
+};

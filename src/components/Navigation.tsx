@@ -10,9 +10,10 @@ import { useTheme } from "./ThemeProvider";
 
 const navLinks = [
   { name: "Accueil", href: "/#hero", sections: ["hero", "about", "skills"] },
-  { name: "Projets", href: "/projects", sections: [] },
   { name: "Formation", href: "/#formation", sections: ["formation", "certifications"] },
   { name: "Parcours", href: "/#experience", sections: ["experience", "contact"] },
+  { name: "Projets", href: "/projects", sections: [] },
+  { name: "Blog", href: "/blog", sections: [] },
 ];
 
 export default function Navigation() {
