@@ -316,6 +316,8 @@ export default function AdminPage() {
     // here would embed real line breaks and break the generated TS file.
     const q = (s: string) => JSON.stringify(s ?? "");
     const arrStr = (arr: string[]) => `[${arr.map(q).join(", ")}]`;
+    // Trim entries and drop empties (used for tech/tag lists).
+    const cleanArr = (arr: string[]) => arrStr((arr || []).map((t) => t.trim()).filter(Boolean));
 
     return `// ============================================================
 //  PORTFOLIO — CONFIGURATION CENTRALISÉE
@@ -394,7 +396,7 @@ export const projects = {
 ${projectItems.map((p) => `    {
       title: ${q(p.title)},
       description: ${q(p.description)},
-      tags: ${arrStr(p.tags)},
+      tags: ${cleanArr(p.tags)},
       category: ${q(p.category)},
       github: ${q(p.github)},
       live: ${q(p.live)},
@@ -438,7 +440,7 @@ ${experiences.map((e) => `    {
       company: ${q(e.company)},
       period: ${q(e.period)},${e.startDate ? `\n      startDate: ${q(e.startDate)},` : ""}${e.endDate ? `\n      endDate: ${q(e.endDate)},` : ""}${e.current ? `\n      current: true,` : ""}
       description: ${q(e.description)},
-      techs: ${arrStr(e.techs)},${e.techGroups && e.techGroups.length ? `\n      techGroups: [${e.techGroups.map((g) => `\n        { label: ${q(g.label)}, items: ${arrStr(g.items)} },`).join("")}\n      ],` : ""}
+      techs: ${cleanArr(e.techs)},${e.techGroups && e.techGroups.length ? `\n      techGroups: [${e.techGroups.map((g) => `\n        { label: ${q(g.label)}, items: ${cleanArr(g.items)} },`).join("")}\n      ],` : ""}
     },`).join("\n")}
   ],
 };
@@ -902,14 +904,42 @@ export const metadata = {
             {/* ═══════ EXPERIENCE ═══════ */}
             {activeTab === "experience" && (
               <>
-                <div className="flex items-center justify-between">
+                <div className="flex items-center justify-between flex-wrap gap-3">
                   <h2 className="text-2xl font-bold">Expérience Professionnelle</h2>
-                  <button onClick={() => { setExperiences([...experiences, { role: "", company: "", period: "", description: "", techs: [] }]); scrollToNew(); }} className="flex items-center gap-2 px-4 py-2 rounded-xl glass text-sm text-[var(--color-primary-light)]"><FiPlus size={14} /> Ajouter</button>
+                  <div className="flex items-center gap-2">
+                    <button
+                      onClick={() => {
+                        const key = (e: ExperienceItem) => (e.current ? "9999-99" : (e.startDate || e.endDate || "0000-00"));
+                        setExperiences([...experiences].sort((a, b) => key(b).localeCompare(key(a))));
+                      }}
+                      title="Trier de la plus récente à la plus ancienne (selon la date de début)"
+                      className="flex items-center gap-2 px-4 py-2 rounded-xl glass text-sm text-[var(--color-muted)] hover:text-[var(--color-foreground)]"
+                    >
+                      <FiChevronDown size={14} /> Trier par date
+                    </button>
+                    <button onClick={() => { setExperiences([...experiences, { role: "", company: "", period: "", description: "", techs: [] }]); scrollToNew(); }} className="flex items-center gap-2 px-4 py-2 rounded-xl glass text-sm text-[var(--color-primary-light)]"><FiPlus size={14} /> Ajouter</button>
+                  </div>
                 </div>
                 {experiences.map((exp, i) => (
                   <div key={i} className="p-6 rounded-2xl bg-[var(--color-surface-light)] border border-[var(--color-border)] space-y-4">
                     <div className="flex items-center justify-between">
-                      <span className="text-sm font-semibold text-[var(--color-primary-light)]">Expérience {i + 1}</span>
+                      <div className="flex items-center gap-2">
+                        <span className="text-sm font-semibold text-[var(--color-primary-light)]">Expérience {i + 1}</span>
+                        <div className="flex items-center gap-1">
+                          <button
+                            onClick={() => { if (i === 0) return; const n = [...experiences]; [n[i - 1], n[i]] = [n[i], n[i - 1]]; setExperiences(n); }}
+                            disabled={i === 0}
+                            className="p-1 rounded text-[var(--color-dim)] hover:text-[var(--color-primary-light)] disabled:opacity-20 disabled:cursor-not-allowed transition-colors"
+                            title="Monter"
+                          ><FiChevronUp size={14} /></button>
+                          <button
+                            onClick={() => { if (i === experiences.length - 1) return; const n = [...experiences]; [n[i], n[i + 1]] = [n[i + 1], n[i]]; setExperiences(n); }}
+                            disabled={i === experiences.length - 1}
+                            className="p-1 rounded text-[var(--color-dim)] hover:text-[var(--color-primary-light)] disabled:opacity-20 disabled:cursor-not-allowed transition-colors"
+                            title="Descendre"
+                          ><FiChevronDown size={14} /></button>
+                        </div>
+                      </div>
                       <button onClick={() => setExperiences(experiences.filter((_, j) => j !== i))} className="text-[var(--color-dim)] hover:text-red-400"><FiTrash2 size={14} /></button>
                     </div>
                     <div className="grid sm:grid-cols-2 gap-4">
@@ -924,7 +954,7 @@ export const metadata = {
                         />
                         {exp.period && <p className="text-[11px] text-[var(--color-dim)] mt-1">Affiché : {exp.period}</p>}
                       </div>
-                      <div className="sm:col-span-2"><label className={labelClass}>Technologies (liste simple, virgule)</label><input value={exp.techs.join(", ")} onChange={(e) => { const n = [...experiences]; n[i] = { ...n[i], techs: e.target.value.split(",").map((t) => t.trim()) }; setExperiences(n); }} className={inputClass} /></div>
+                      <div className="sm:col-span-2"><label className={labelClass}>Technologies (liste simple, virgule)</label><input value={exp.techs.join(", ")} onChange={(e) => { const n = [...experiences]; n[i] = { ...n[i], techs: e.target.value.split(",").map((t) => t.replace(/^ /, "")) }; setExperiences(n); }} className={inputClass} /></div>
                     </div>
 
                     {/* Technologies par catégorie */}
@@ -936,7 +966,7 @@ export const metadata = {
                       {(exp.techGroups || []).map((g, gi) => (
                         <div key={gi} className="flex flex-col sm:flex-row gap-2 items-start">
                           <input value={g.label} placeholder="Catégorie (ex. Backend & API)" onChange={(e) => { const n = [...experiences]; const gs = [...(n[i].techGroups || [])]; gs[gi] = { ...gs[gi], label: e.target.value }; n[i] = { ...n[i], techGroups: gs }; setExperiences(n); }} className={inputClass + " sm:!w-56"} />
-                          <input value={g.items.join(", ")} placeholder="Techs séparées par des virgules" onChange={(e) => { const n = [...experiences]; const gs = [...(n[i].techGroups || [])]; gs[gi] = { ...gs[gi], items: e.target.value.split(",").map((t) => t.trim()) }; n[i] = { ...n[i], techGroups: gs }; setExperiences(n); }} className={inputClass} />
+                          <input value={g.items.join(", ")} placeholder="Techs séparées par des virgules" onChange={(e) => { const n = [...experiences]; const gs = [...(n[i].techGroups || [])]; gs[gi] = { ...gs[gi], items: e.target.value.split(",").map((t) => t.replace(/^ /, "")) }; n[i] = { ...n[i], techGroups: gs }; setExperiences(n); }} className={inputClass} />
                           <button onClick={() => { const n = [...experiences]; const gs = (n[i].techGroups || []).filter((_, j) => j !== gi); n[i] = { ...n[i], techGroups: gs }; setExperiences(n); }} className="text-[var(--color-dim)] hover:text-red-400 pt-2.5"><FiTrash2 size={14} /></button>
                         </div>
                       ))}
@@ -1029,7 +1059,7 @@ export const metadata = {
                     <div className="grid sm:grid-cols-2 gap-4">
                       <div><label className={labelClass}>Titre</label><input value={p.title} onChange={(e) => { const n = [...projectItems]; n[i] = { ...n[i], title: e.target.value }; setProjectItems(n); }} className={inputClass} /></div>
                       <div><label className={labelClass}>Catégorie</label><input value={p.category} onChange={(e) => { const n = [...projectItems]; n[i] = { ...n[i], category: e.target.value }; setProjectItems(n); }} className={inputClass} /></div>
-                      <div><label className={labelClass}>Technologies (virgule)</label><input value={p.tags.join(", ")} onChange={(e) => { const n = [...projectItems]; n[i] = { ...n[i], tags: e.target.value.split(",").map((t) => t.trim()) }; setProjectItems(n); }} className={inputClass} /></div>
+                      <div><label className={labelClass}>Technologies (virgule)</label><input value={p.tags.join(", ")} onChange={(e) => { const n = [...projectItems]; n[i] = { ...n[i], tags: e.target.value.split(",").map((t) => t.replace(/^ /, "")) }; setProjectItems(n); }} className={inputClass} /></div>
                       <div><label className={labelClass}>Image</label><select value={p.image || ""} onChange={(e) => { const n = [...projectItems]; n[i] = { ...n[i], image: e.target.value }; setProjectItems(n); }} className={inputClass}><option value="">-- Sélectionner une image --</option>{images.projects.map((src) => (<option key={src} value={src}>{src.split("/").pop()}</option>))}</select></div>
                       <div><label className={labelClass}>GitHub</label><input value={p.github} onChange={(e) => { const n = [...projectItems]; n[i] = { ...n[i], github: e.target.value }; setProjectItems(n); }} className={inputClass} /></div>
                       <div><label className={labelClass}>Live URL</label><input value={p.live} onChange={(e) => { const n = [...projectItems]; n[i] = { ...n[i], live: e.target.value }; setProjectItems(n); }} className={inputClass} /></div>
