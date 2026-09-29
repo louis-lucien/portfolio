@@ -239,7 +239,7 @@ export default function Projects() {
             initial={{ opacity: 0 }}
             animate={{ opacity: 1 }}
             exit={{ opacity: 0 }}
-            className="fixed inset-0 z-[60] flex items-start sm:items-center justify-center p-4 sm:p-6 overflow-y-auto"
+            className="fixed inset-0 z-[60] flex items-center justify-center p-4 sm:p-6"
           >
             <motion.div
               className="absolute inset-0 bg-[var(--color-background)]/80 backdrop-blur-sm"
@@ -251,7 +251,7 @@ export default function Projects() {
               animate={{ opacity: 1, scale: 1, y: 0 }}
               exit={{ opacity: 0, scale: 0.97, y: 12 }}
               transition={{ type: "spring", stiffness: 300, damping: 30 }}
-              className="relative z-10 w-full max-w-2xl my-4 rounded-3xl border border-[var(--color-border)] bg-[var(--color-surface)] shadow-2xl overflow-hidden"
+              className="relative z-10 w-full max-w-2xl max-h-[90vh] flex flex-col rounded-3xl border border-[var(--color-border)] bg-[var(--color-surface)] shadow-2xl overflow-hidden"
             >
               {/* Close */}
               <button
@@ -262,6 +262,7 @@ export default function Projects() {
                 <FiX size={18} />
               </button>
 
+              <div className="overflow-y-auto">
               {projectImage(selected) ? (
                 <div className="relative h-52 sm:h-60 bg-[var(--color-surface-light)]">
                   <Image
@@ -334,6 +335,7 @@ export default function Projects() {
                     )}
                   </div>
                 )}
+              </div>
               </div>
             </motion.div>
           </motion.div>
