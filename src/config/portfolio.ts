@@ -412,6 +412,178 @@ export const blog = {
     "Retours d'expérience et repères techniques sur la data engineering, l'IoT, l'intelligence artificielle et la mise en production de systèmes fiables.",
   posts: [
     {
+      slug: "comprendre-le-metier-avant-la-donnee",
+      title:
+        "Comprendre le métier avant la donnée : la première compétence d'un data analyst",
+      date: "2025-05-06",
+      readTime: "8 min",
+      image: "",
+      excerpt:
+        "La technique ne crée pas de valeur toute seule. Avant les modèles et les pipelines, il faut comprendre le métier, ses contraintes et ce qui compte vraiment pour lui.",
+      content: `
+<p>La plupart des projets data n'échouent pas pour des raisons techniques : ils échouent parce qu'ils répondent à la mauvaise question. On peut construire le plus beau pipeline du monde ; s'il n'éclaire aucune décision réelle, il ne sert à rien.</p>
+<p>La première compétence d'un bon analyste n'est pas de coder un modèle, c'est de <strong>comprendre le métier</strong> qu'il sert : ses objectifs, ses contraintes, et la façon dont il prend ses décisions aujourd'hui.</p>
+
+<h3>01 · Écouter avant d'analyser</h3>
+<p>Avant d'ouvrir un notebook, il faut s'immerger : parler aux équipes, apprendre leur vocabulaire, comprendre leurs irritants quotidiens. Une donnée n'a de sens que dans le contexte métier qui la produit.</p>
+<ul>
+<li>Quelles décisions les équipes prennent-elles, et à quelle fréquence ?</li>
+<li>Sur quelles informations s'appuient-elles aujourd'hui, même imparfaites ?</li>
+<li>Qu'est-ce qui leur ferait vraiment gagner du temps ou de l'argent ?</li>
+</ul>
+
+<h3>02 · Distinguer le symptôme du vrai problème</h3>
+<p>« On veut un tableau de bord » est rarement le vrai besoin — c'est un symptôme. Le rôle de l'analyste est de remonter à la question sous-jacente : réduire un coût ? anticiper une panne ? prioriser des interventions ? La bonne analyse commence par une bonne <strong>question</strong>.</p>
+
+<h3>03 · Relier chaque donnée à une décision</h3>
+<p>Un indicateur qui ne change aucune décision est du bruit, aussi précis soit-il. Pour chaque métrique, se demander : <em>« si ce chiffre bouge, qui fait quoi différemment ? »</em> Si la réponse est « rien », l'indicateur n'a pas sa place.</p>
+
+<h3>04 · Restituer dans le langage du métier</h3>
+<p>Une analyse juste mais incomprise est une analyse perdue. La valeur se mesure à la décision qu'elle déclenche — il faut donc traduire les résultats en termes d'<strong>impact concret</strong> (temps, argent, risque), pas en jargon statistique.</p>
+
+<h3>En pratique — check-list</h3>
+<ul class="check">
+<li>Passer du temps sur le terrain avant de toucher aux données.</li>
+<li>Reformuler le besoin en une question de décision claire.</li>
+<li>Écarter les indicateurs qui ne changent aucune action.</li>
+<li>Valider sa compréhension métier auprès des équipes.</li>
+<li>Restituer en impact concret, pas en jargon.</li>
+</ul>
+
+<h3>Conclusion</h3>
+<p>La donnée est un moyen, jamais une fin. Ce qui distingue un bon analyste, ce n'est pas la maîtrise d'un algorithme de plus, mais sa capacité à comprendre un métier assez profondément pour poser la question qui compte — et y répondre de façon actionnable.</p>
+`,
+    },
+    {
+      slug: "cadrer-un-probleme-data-et-indicateurs",
+      title:
+        "Cadrer un problème data et choisir les bons indicateurs",
+      date: "2025-04-22",
+      readTime: "9 min",
+      image: "",
+      excerpt:
+        "Un projet data réussi se joue au cadrage : bien définir l'objectif, les hypothèses et les indicateurs qui mesurent vraiment le succès — pas ceux qui flattent.",
+      content: `
+<p>Entre une analyse qui change les décisions et une analyse qui finit dans un tiroir, la différence se joue rarement sur l'algorithme : elle se joue sur le <strong>cadrage</strong>. Mal poser un problème, c'est garantir une réponse inutile, même techniquement irréprochable.</p>
+
+<h3>01 · Formuler le problème clairement</h3>
+<p>Un bon énoncé tient en une phrase : <em>qui</em> a besoin de <em>quoi</em>, pour prendre <em>quelle</em> décision, dans <em>quel</em> délai. Tant que cette phrase n'est pas claire, il est prématuré d'analyser quoi que ce soit.</p>
+
+<h3>02 · Choisir des indicateurs qui comptent</h3>
+<p>Tous les chiffres ne se valent pas. On distingue les <strong>vanity metrics</strong> (impressionnantes mais inertes) des <strong>indicateurs actionnables</strong> (qui orientent une décision).</p>
+<ul>
+<li>Un bon KPI est relié à un objectif, pas à l'ego d'un rapport ;</li>
+<li>il est mesurable de façon fiable et régulière ;</li>
+<li>il déclenche une action quand il franchit un seuil.</li>
+</ul>
+
+<h3>03 · Expliciter le succès et les hypothèses</h3>
+<p>Avant d'analyser, définir à quoi ressemble un « bon » résultat, et écrire les hypothèses de départ. Cela évite le biais de confirmation — chercher, inconsciemment, à confirmer ce qu'on croyait déjà.</p>
+
+<h3>04 · Éviter les pièges d'interprétation</h3>
+<p>La rigueur analytique, c'est surtout savoir se méfier :</p>
+<ul>
+<li><strong>corrélation n'est pas causalité</strong> : deux courbes qui montent ensemble ne s'expliquent pas forcément l'une par l'autre ;</li>
+<li>attention aux <strong>biais d'échantillon</strong> : à qui ou à quoi manque-t-il dans les données ?</li>
+<li>un chiffre agrégé peut cacher des réalités opposées (paradoxe de Simpson).</li>
+</ul>
+
+<h3>En pratique — check-list</h3>
+<ul class="check">
+<li>Résumer le problème en une phrase de décision.</li>
+<li>Ne garder que des indicateurs actionnables.</li>
+<li>Écrire à l'avance la définition du succès.</li>
+<li>Vérifier corrélation vs causalité avant de conclure.</li>
+<li>Questionner la représentativité de l'échantillon.</li>
+</ul>
+
+<h3>Conclusion</h3>
+<p>Le cadrage est la partie la moins visible et la plus rentable du travail d'analyste. Bien posé, un problème est déjà à moitié résolu ; mal posé, aucune technique ne le sauvera. Savoir choisir la bonne question et les bons indicateurs, c'est là que se démontre la capacité d'analyse.</p>
+`,
+    },
+    {
+      slug: "transformer-la-donnee-en-valeur-metier",
+      title: "Transformer la donnée en valeur métier : de la collecte à la décision",
+      date: "2025-04-04",
+      readTime: "9 min",
+      image: "",
+      excerpt:
+        "Collecter des données ne rapporte rien en soi. La valeur naît de la chaîne qui va de la donnée brute à une décision qui change concrètement quelque chose.",
+      content: `
+<p>Beaucoup d'organisations accumulent des données comme on accumule des archives : par réflexe, sans en tirer profit. Or la donnée n'a aucune valeur intrinsèque — sa valeur naît uniquement de la <strong>décision</strong> qu'elle permet de mieux prendre.</p>
+
+<h3>01 · La chaîne de valeur de la donnée</h3>
+<p>Ma conviction de travail tient en une phrase : <em>du capteur au tableau de bord</em>. Entre les deux, une chaîne : collecte, fiabilisation, stockage, analyse, restitution, décision. Chaque maillon peut détruire la valeur des précédents — une donnée sale ou mal interprétée coûte plus cher que pas de donnée du tout.</p>
+
+<h3>02 · Commencer par les quick wins</h3>
+<p>Inutile de viser l'usine à gaz d'emblée. Les projets qui réussissent commencent par un cas d'usage simple, à fort impact et à faible risque : un rapport automatisé, une alerte qui évite une panne, un contrôle qui détecte des écarts de facturation. La confiance se gagne par des résultats concrets et rapides.</p>
+
+<h3>03 · Mesurer le retour</h3>
+<p>Un projet data doit se justifier comme tout investissement. On estime le <strong>gain</strong> (temps économisé, pertes évitées, revenus supplémentaires) et on le compare au coût. Ce réflexe économique distingue l'analyste qui « fait des dashboards » de celui qui crée de la valeur.</p>
+<ul>
+<li>Combien de temps cette automatisation fait-elle gagner par mois ?</li>
+<li>Combien une détection précoce évite-t-elle de pertes ?</li>
+<li>Quelle décision devient possible qui ne l'était pas avant ?</li>
+</ul>
+
+<h3>04 · Industrialiser ce qui marche</h3>
+<p>Une analyse ponctuelle prouve la valeur ; l'industrialisation la pérennise. On fiabilise, on automatise, on documente — pour que le résultat ne dépende plus d'une personne ni d'un fichier ouvert un lundi matin.</p>
+
+<h3>En pratique — check-list</h3>
+<ul class="check">
+<li>Relier chaque projet à une décision et un gain chiffré.</li>
+<li>Démarrer par un cas d'usage simple à fort impact.</li>
+<li>Vérifier la qualité de la donnée avant d'en tirer des conclusions.</li>
+<li>Mesurer le retour, pas seulement l'activité.</li>
+<li>Industrialiser ce qui a prouvé sa valeur.</li>
+</ul>
+
+<h3>Conclusion</h3>
+<p>Tirer profit de ses données, ce n'est pas en collecter davantage : c'est raccourcir la distance entre une donnée et une décision utile. L'analyste qui comprend cette chaîne — et sait où se crée la valeur — devient un partenaire du métier, pas un simple fournisseur de graphiques.</p>
+`,
+    },
+    {
+      slug: "data-storytelling-faire-parler-les-chiffres",
+      title: "Data storytelling : faire parler les chiffres pour décider",
+      date: "2025-03-24",
+      readTime: "8 min",
+      image: "",
+      excerpt:
+        "Une analyse juste mais incomprise ne sert à rien. Le data storytelling transforme des chiffres en une histoire claire qui déclenche la décision.",
+      content: `
+<p>On croit souvent que les chiffres parlent d'eux-mêmes. C'est faux : un tableau brut n'a jamais convaincu personne d'agir. La valeur d'une analyse dépend autant de sa <strong>restitution</strong> que de sa justesse.</p>
+
+<h3>01 · Connaître son audience</h3>
+<p>On ne présente pas les mêmes choses à un directeur, à une équipe technique ou à un opérateur terrain. La première question n'est pas « qu'ai-je trouvé ? » mais « <em>de quoi cette personne a-t-elle besoin pour décider ?</em> ».</p>
+
+<h3>02 · Une visualisation, un message</h3>
+<p>Un bon graphique porte une idée, pas dix. Trop d'information tue le message. La clarté prime sur l'exhaustivité :</p>
+<ul>
+<li>choisir le bon type de graphique pour la comparaison visée ;</li>
+<li>mettre en évidence l'essentiel, atténuer le reste ;</li>
+<li>titrer le graphique par sa conclusion, pas par son contenu.</li>
+</ul>
+
+<h3>03 · Du chiffre à la recommandation</h3>
+<p>Un analyste utile ne s'arrête pas au constat (« les pertes ont augmenté de 12 % ») : il propose une lecture et une piste d'action (« …concentrées sur trois sites ; prioriser leur maintenance »). C'est ce passage du <strong>quoi</strong> au <strong>et alors ?</strong> qui crée l'impact.</p>
+
+<h3>04 · Rester honnête sur l'incertitude</h3>
+<p>La crédibilité se construit dans la nuance : dire ce que les données montrent, mais aussi leurs limites. Un ordre de grandeur assumé vaut mieux qu'une fausse précision. La confiance, une fois perdue sur un chiffre, contamine tout le reste.</p>
+
+<h3>En pratique — check-list</h3>
+<ul class="check">
+<li>Adapter le niveau et le format à l'audience.</li>
+<li>Un message clair par visualisation.</li>
+<li>Titrer par la conclusion, pas par la description.</li>
+<li>Toujours conclure par un « et alors ? » actionnable.</li>
+<li>Assumer les limites et l'incertitude.</li>
+</ul>
+
+<h3>Conclusion</h3>
+<p>Le data storytelling n'est pas du maquillage : c'est le dernier maillon — décisif — de la chaîne de valeur de la donnée. Savoir transformer une analyse en une histoire claire qui déclenche l'action, c'est transformer un savoir technique en influence réelle.</p>
+`,
+    },
+    {
       slug: "supervision-reseau-electrique-temps-reel",
       title:
         "Superviser un réseau électrique en temps réel : de la donnée terrain au tableau de bord",
