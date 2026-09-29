@@ -60,9 +60,10 @@ export default function Navigation() {
           <div className="hidden md:flex items-center gap-1">
             {navLinks.map((link) => {
               const isRoute = !link.href.includes("#");
+              const onHome = pathname === "/";
               const isActive = isRoute
                 ? pathname === link.href
-                : link.sections.includes(activeSection);
+                : onHome && link.sections.includes(activeSection);
               const Tag = isRoute ? Link : "a";
 
               return (
