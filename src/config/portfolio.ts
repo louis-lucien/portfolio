@@ -327,13 +327,15 @@ export const certifications = {
       name: "IBM Applied DevOps Engineering",
       issuer: "IBM",
       date: "2026",
-      highlight: false,
+      highlight: true,
+      image: "/images/certs/ibm_applied_devops_engineering.png",
     },
     {
       name: "IBM DevOps and Software Engineering",
       issuer: "IBM",
       date: "",
-      highlight: false,
+      highlight: true,
+      image: "/images/certs/ibm_devops-and_software.png",
     },
   ],
 };
