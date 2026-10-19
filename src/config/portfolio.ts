@@ -43,7 +43,7 @@ export const hero = {
 export const about = {
   heading: "Qui suis-je",
   showProfileType: true,
-  showPillars: true,
+  showPillars: false,
   showTraitValues: true,
   profileType: {
     description: "Esprit stratégique, analytique, visionnaire. L'INTJ-A ne se contente pas de résoudre des problèmes — il les anticipe et conçoit des systèmes pour les prévenir.",
@@ -322,6 +322,18 @@ export const certifications = {
       date: "2024",
       highlight: true,
       image: "/images/certs/python_certificat.jpg",
+    },
+    {
+      name: "IBM Applied DevOps Engineering",
+      issuer: "IBM",
+      date: "2026",
+      highlight: false,
+    },
+    {
+      name: "IBM DevOps and Software Engineering",
+      issuer: "IBM",
+      date: "",
+      highlight: false,
     },
   ],
 };
