@@ -43,22 +43,34 @@ async function getSha(path: string): Promise<string | null> {
   return Array.isArray(data) ? null : data.sha ?? null;
 }
 
-/** Create or update a file. `contentBase64` must be base64-encoded content. */
+/** Create or update a file. `contentBase64` must be base64-encoded content.
+ * Retries on conflict (409/422): a concurrent commit may have moved the
+ * branch, so we re-read the latest SHA and try again. */
 export async function commitFile(path: string, contentBase64: string, message: string): Promise<void> {
-  const sha = await getSha(path);
-  const res = await gh(`/repos/${OWNER}/${REPO}/contents/${encodePath(path)}`, {
-    method: "PUT",
-    body: JSON.stringify({
-      message,
-      content: contentBase64,
-      branch: BRANCH,
-      ...(sha ? { sha } : {}),
-    }),
-  });
-  if (!res.ok) {
-    const detail = await res.text();
-    throw new Error(`GitHub (écriture ${path}) : ${res.status} ${detail}`);
+  let lastDetail = "";
+  let lastStatus = 0;
+  for (let attempt = 0; attempt < 3; attempt++) {
+    const sha = await getSha(path);
+    const res = await gh(`/repos/${OWNER}/${REPO}/contents/${encodePath(path)}`, {
+      method: "PUT",
+      body: JSON.stringify({
+        message,
+        content: contentBase64,
+        branch: BRANCH,
+        ...(sha ? { sha } : {}),
+      }),
+    });
+    if (res.ok) return;
+    lastStatus = res.status;
+    lastDetail = await res.text();
+    // Conflict / stale SHA — wait briefly then retry with a fresh SHA.
+    if ((res.status === 409 || res.status === 422) && attempt < 2) {
+      await new Promise((r) => setTimeout(r, 400 * (attempt + 1)));
+      continue;
+    }
+    break;
   }
+  throw new Error(`GitHub (écriture ${path}) : ${lastStatus} ${lastDetail}`);
 }
 
 interface DirEntry {

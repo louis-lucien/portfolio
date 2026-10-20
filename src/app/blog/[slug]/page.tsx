@@ -31,6 +31,7 @@ export default async function BlogPostPage({
   const { slug } = await params;
   const post = blog.posts.find((p) => p.slug === slug);
   if (!post) notFound();
+  const coverImage = (post as { image?: string }).image || "";
 
   return (
     <main>
@@ -69,10 +70,10 @@ export default async function BlogPostPage({
             )}
           </div>
 
-          {post.image && (
+          {coverImage && (
             <div className="relative h-64 sm:h-80 rounded-2xl overflow-hidden mb-10 bg-[var(--color-surface-light)]">
               <Image
-                src={post.image}
+                src={coverImage}
                 alt={post.title}
                 fill
                 className="object-cover"

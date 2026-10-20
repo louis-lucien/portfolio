@@ -309,22 +309,39 @@ export default function AdminPage() {
 
   // ─── Upload image ──────────────────────────────────────────
   async function handleUpload(file: File, destination: string) {
+    setError(null);
+    // Client-side guard: Vercel limits the request body to ~4.5 Mo.
+    if (file.size > 4 * 1024 * 1024) {
+      setError(
+        `Image trop lourde (${(file.size / 1024 / 1024).toFixed(1)} Mo). Compressez-la ou choisissez une image de moins de 4 Mo.`
+      );
+      return null;
+    }
     setUploadingTo(destination);
     try {
       const formData = new FormData();
       formData.append("file", file);
       formData.append("destination", destination);
       const res = await fetch("/api/upload", { method: "POST", body: formData });
-      const data = await res.json();
-      if (data.success) {
+      let data: { success?: boolean; path?: string; error?: string } = {};
+      try {
+        data = await res.json();
+      } catch {
+        /* Non-JSON response (e.g. a 413 from the platform). */
+      }
+      if (res.ok && data.success) {
         // Reload images list
         const imagesRes = await fetch("/api/upload");
         const imagesData = await imagesRes.json();
         if (!imagesData.error) setImages(imagesData);
-        return data.path;
+        return data.path ?? null;
       }
+      setError(
+        data.error ||
+          `Échec de l'upload (code ${res.status}). L'image est peut-être trop lourde, ou le token GitHub est absent / invalide.`
+      );
     } catch {
-      setError("Erreur lors de l'upload");
+      setError("Erreur réseau lors de l'upload.");
     } finally {
       setUploadingTo(null);
     }
@@ -654,11 +671,11 @@ export const metadata = {
 
       {/* Error banner */}
       {error && (
-        <div className="max-w-7xl mx-auto px-6 pt-4">
-          <div className="p-4 rounded-xl bg-red-500/10 border border-red-500/20 flex items-center gap-3 text-red-400 text-sm">
-            <FiAlertCircle size={16} />
-            {error}
-            <button onClick={() => setError(null)} className="ml-auto text-xs underline">Fermer</button>
+        <div className="sticky top-0 z-50 max-w-7xl mx-auto px-6 pt-4">
+          <div className="p-4 rounded-xl bg-red-500/15 backdrop-blur-md border border-red-500/30 shadow-lg flex items-center gap-3 text-red-400 text-sm">
+            <FiAlertCircle size={16} className="shrink-0" />
+            <span className="flex-1">{error}</span>
+            <button onClick={() => setError(null)} className="text-xs underline shrink-0">Fermer</button>
           </div>
         </div>
       )}
@@ -1227,7 +1244,31 @@ export const metadata = {
                       <div><label className={labelClass}>Nom</label><input value={c.name} onChange={(e) => { const n = [...certs]; n[i] = { ...n[i], name: e.target.value }; setCerts(n); }} className={inputClass} /></div>
                       <div><label className={labelClass}>Organisme</label><input value={c.issuer} onChange={(e) => { const n = [...certs]; n[i] = { ...n[i], issuer: e.target.value }; setCerts(n); }} className={inputClass} /></div>
                       <div><label className={labelClass}>Date</label><input value={c.date} onChange={(e) => { const n = [...certs]; n[i] = { ...n[i], date: e.target.value }; setCerts(n); }} className={inputClass} /></div>
-                      <div><label className={labelClass}>Image</label><select value={c.image || ""} onChange={(e) => { const n = [...certs]; n[i] = { ...n[i], image: e.target.value }; setCerts(n); }} className={inputClass}><option value="">-- Sélectionner une image --</option>{images.certs.map((src) => (<option key={src} value={src}>{src.split("/").pop()}</option>))}</select></div>
+                      <div className="sm:col-span-2">
+                        <label className={labelClass}>Image du certificat</label>
+                        <div className="flex flex-wrap items-center gap-3">
+                          <select value={c.image || ""} onChange={(e) => { const n = [...certs]; n[i] = { ...n[i], image: e.target.value }; setCerts(n); }} className={inputClass + " sm:flex-1"}>
+                            <option value="">-- Aucune / sélectionner --</option>
+                            {images.certs.map((src) => (<option key={src} value={src}>{src.split("/").pop()}</option>))}
+                          </select>
+                          <label className="flex items-center gap-2 px-4 py-2.5 rounded-xl glass text-sm text-[var(--color-primary-light)] hover:bg-[var(--color-primary)]/10 transition-colors cursor-pointer whitespace-nowrap">
+                            <FiImage size={14} />
+                            {uploadingTo?.startsWith("images/certs/") ? "Upload..." : "Uploader"}
+                            <input type="file" accept="image/*" className="hidden" onChange={async (e) => {
+                              const file = e.target.files?.[0];
+                              if (file) {
+                                const name = file.name.toLowerCase().replace(/\s+/g, "-").replace(/[^a-z0-9._-]/g, "-");
+                                const path = await handleUpload(file, `images/certs/${name}`);
+                                if (path) { const n = [...certs]; n[i] = { ...n[i], image: path }; setCerts(n); }
+                              }
+                            }} />
+                          </label>
+                        </div>
+                        {c.image && (
+                          // eslint-disable-next-line @next/next/no-img-element
+                          <img src={c.image} alt="" className="mt-3 h-24 rounded-lg object-contain border border-[var(--color-border)] bg-[var(--color-surface)]" />
+                        )}
+                      </div>
                     </div>
                   </div>
                 ))}

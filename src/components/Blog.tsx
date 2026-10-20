@@ -8,6 +8,14 @@ import { FiCalendar, FiArrowRight } from "react-icons/fi";
 import { blog, personal } from "@/config/portfolio";
 import { formatDate } from "@/lib/date";
 
+type Post = (typeof blog.posts)[number];
+
+// Cover image is optional and may be absent from the generated config type.
+function postImage(p: Post): string {
+  const img = (p as Record<string, unknown>).image;
+  return typeof img === "string" ? img : "";
+}
+
 export default function Blog() {
   const ref = useRef(null);
   const isInView = useInView(ref, { once: true, margin: "-80px" });
@@ -49,9 +57,9 @@ export default function Blog() {
                 >
                   {/* Cover */}
                   <div className="relative h-48 overflow-hidden bg-[var(--color-surface-light)]">
-                    {post.image ? (
+                    {postImage(post) ? (
                       <Image
-                        src={post.image}
+                        src={postImage(post)}
                         alt={post.title}
                         fill
                         className="object-cover group-hover:scale-105 transition-transform duration-700"
