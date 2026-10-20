@@ -1231,7 +1231,13 @@ export const metadata = {
                 {certs.map((c, i) => (
                   <div key={i} className="p-5 rounded-2xl bg-[var(--color-surface-light)] border border-[var(--color-border)] space-y-4">
                     <div className="flex items-center justify-between">
-                      <span className="text-sm font-semibold text-[var(--color-primary-light)]">Certification {i + 1}</span>
+                      <div className="flex items-center gap-2">
+                        <span className="text-sm font-semibold text-[var(--color-primary-light)]">Certification {i + 1}</span>
+                        <div className="flex items-center gap-1">
+                          <button onClick={() => { if (i === 0) return; const n = [...certs]; [n[i - 1], n[i]] = [n[i], n[i - 1]]; setCerts(n); }} disabled={i === 0} className="p-1 rounded text-[var(--color-dim)] hover:text-[var(--color-primary-light)] disabled:opacity-20 disabled:cursor-not-allowed transition-colors" title="Monter"><FiChevronUp size={14} /></button>
+                          <button onClick={() => { if (i === certs.length - 1) return; const n = [...certs]; [n[i], n[i + 1]] = [n[i + 1], n[i]]; setCerts(n); }} disabled={i === certs.length - 1} className="p-1 rounded text-[var(--color-dim)] hover:text-[var(--color-primary-light)] disabled:opacity-20 disabled:cursor-not-allowed transition-colors" title="Descendre"><FiChevronDown size={14} /></button>
+                        </div>
+                      </div>
                       <div className="flex items-center gap-4">
                         <label className="flex items-center gap-2 text-xs text-[var(--color-muted)] cursor-pointer">
                           <input type="checkbox" checked={c.highlight} onChange={(e) => { const n = [...certs]; n[i] = { ...n[i], highlight: e.target.checked }; setCerts(n); }} className="accent-[var(--color-primary)]" />
