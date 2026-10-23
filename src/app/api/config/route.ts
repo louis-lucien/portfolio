@@ -2,14 +2,43 @@ import { NextResponse } from "next/server";
 import fs from "fs/promises";
 import path from "path";
 import { isAuthed } from "@/lib/auth";
-import { commitFile, isGithubMode } from "@/lib/github";
+import { commitFile, isGithubMode, readFile } from "@/lib/github";
 
 const CONFIG_PATH = path.join(process.cwd(), "src/config/portfolio.ts");
 const CONFIG_REPO_PATH = "src/config/portfolio.ts";
 
+const CONFIG_EXPORTS = [
+  "personal", "hero", "about", "skills", "projects",
+  "formation", "certifications", "experience", "contact", "blog",
+];
+
+/** Evaluate the config source (pure `export const` object literals, no imports)
+ * into a plain data object. Used to read the LIVE config from GitHub. */
+function parseConfig(source: string): Record<string, unknown> {
+  const ret = CONFIG_EXPORTS
+    .map((n) => `${n}:(typeof ${n}!=="undefined"?${n}:undefined)`)
+    .join(",");
+  const code = source.replace(/export\s+const\s+/g, "const ") + `\n;return {${ret}};`;
+  // eslint-disable-next-line no-new-func, @typescript-eslint/no-implied-eval
+  return new Function(code)() as Record<string, unknown>;
+}
+
 export async function GET() {
   if (!(await isAuthed())) {
     return NextResponse.json({ error: "Non autorisé" }, { status: 401 });
+  }
+
+  // In production, read the LIVE config from GitHub so the admin never loads a
+  // stale build-time snapshot that a later save could overwrite.
+  if (isGithubMode()) {
+    try {
+      const liveRaw = await readFile(CONFIG_REPO_PATH);
+      if (liveRaw) {
+        return NextResponse.json({ raw: liveRaw, data: parseConfig(liveRaw) });
+      }
+    } catch {
+      // Fall back to the bundled module below.
+    }
   }
 
   try {

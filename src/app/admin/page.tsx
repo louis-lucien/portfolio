@@ -17,6 +17,8 @@ import {
   FiLoader,
   FiChevronUp,
   FiChevronDown,
+  FiChevronsUp,
+  FiChevronsDown,
 } from "react-icons/fi";
 import RichTextEditor from "@/components/RichTextEditor";
 import PeriodPicker from "@/components/PeriodPicker";
@@ -1234,8 +1236,10 @@ export const metadata = {
                       <div className="flex items-center gap-2">
                         <span className="text-sm font-semibold text-[var(--color-primary-light)]">Certification {i + 1}</span>
                         <div className="flex items-center gap-1">
+                          <button onClick={() => { if (i === 0) return; const n = [...certs]; const [m] = n.splice(i, 1); n.unshift(m); setCerts(n); }} disabled={i === 0} className="p-1 rounded text-[var(--color-dim)] hover:text-[var(--color-primary-light)] disabled:opacity-20 disabled:cursor-not-allowed transition-colors" title="Tout en haut"><FiChevronsUp size={14} /></button>
                           <button onClick={() => { if (i === 0) return; const n = [...certs]; [n[i - 1], n[i]] = [n[i], n[i - 1]]; setCerts(n); }} disabled={i === 0} className="p-1 rounded text-[var(--color-dim)] hover:text-[var(--color-primary-light)] disabled:opacity-20 disabled:cursor-not-allowed transition-colors" title="Monter"><FiChevronUp size={14} /></button>
                           <button onClick={() => { if (i === certs.length - 1) return; const n = [...certs]; [n[i], n[i + 1]] = [n[i + 1], n[i]]; setCerts(n); }} disabled={i === certs.length - 1} className="p-1 rounded text-[var(--color-dim)] hover:text-[var(--color-primary-light)] disabled:opacity-20 disabled:cursor-not-allowed transition-colors" title="Descendre"><FiChevronDown size={14} /></button>
+                          <button onClick={() => { if (i === certs.length - 1) return; const n = [...certs]; const [m] = n.splice(i, 1); n.push(m); setCerts(n); }} disabled={i === certs.length - 1} className="p-1 rounded text-[var(--color-dim)] hover:text-[var(--color-primary-light)] disabled:opacity-20 disabled:cursor-not-allowed transition-colors" title="Tout en bas"><FiChevronsDown size={14} /></button>
                         </div>
                       </div>
                       <div className="flex items-center gap-4">

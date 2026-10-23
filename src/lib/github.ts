@@ -73,6 +73,17 @@ export async function commitFile(path: string, contentBase64: string, message: s
   throw new Error(`GitHub (écriture ${path}) : ${lastStatus} ${lastDetail}`);
 }
 
+/** Read a text file's current content from GitHub (latest on BRANCH).
+ * Returns null if the file doesn't exist. */
+export async function readFile(path: string): Promise<string | null> {
+  const res = await gh(`/repos/${OWNER}/${REPO}/contents/${encodePath(path)}?ref=${BRANCH}`);
+  if (res.status === 404) return null;
+  if (!res.ok) throw new Error(`GitHub (lecture ${path}) : ${res.status}`);
+  const data = await res.json();
+  if (Array.isArray(data) || typeof data.content !== "string") return null;
+  return Buffer.from(data.content, "base64").toString("utf-8");
+}
+
 interface DirEntry {
   name: string;
   type: string;
