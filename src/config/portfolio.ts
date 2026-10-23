@@ -282,6 +282,13 @@ export const certifications = {
       image: "/images/certs/deep_learning.png",
     },
     {
+      name: "IBM DevOps and Software Engineering",
+      issuer: "IBM",
+      date: "",
+      highlight: true,
+      image: "/images/certs/ibm_devops-and_software.png",
+    },
+    {
       name: "Neural Networks & Deep Learning",
       issuer: "DeepLearning.AI",
       date: "Jan. 2025",
@@ -322,13 +329,6 @@ export const certifications = {
       date: "2024",
       highlight: true,
       image: "/images/certs/python_certificat.jpg",
-    },
-    {
-      name: "IBM DevOps and Software Engineering",
-      issuer: "IBM",
-      date: "",
-      highlight: true,
-      image: "/images/certs/ibm_devops-and_software.png",
     },
     {
       name: "IBM Applied DevOps Engineering",
