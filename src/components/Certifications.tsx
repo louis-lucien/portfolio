@@ -12,6 +12,7 @@ import {
   FiFileText,
 } from "react-icons/fi";
 import { certifications } from "@/config/portfolio";
+import PdfThumbnail from "@/components/PdfThumbnail";
 
 type Cert = (typeof certifications.items)[number];
 
@@ -106,19 +107,12 @@ export default function Certifications() {
                         href={certPdf(cert)}
                         target="_blank"
                         rel="noopener noreferrer"
-                        className="group/pdf relative mx-5 mb-4 block rounded-xl overflow-hidden bg-[var(--color-surface)] border border-[var(--color-border)]"
+                        className="group/pdf relative mx-5 mb-4 block rounded-xl overflow-hidden bg-[var(--color-surface)]"
                       >
-                        <div className="aspect-[16/10] relative">
-                          <iframe
-                            src={`${certPdf(cert)}#toolbar=0&navpanes=0&scrollbar=0&view=FitH`}
-                            title={cert.name}
-                            loading="lazy"
-                            className="absolute inset-0 w-full h-full pointer-events-none"
-                          />
-                        </div>
-                        <div className="absolute inset-0 bg-gradient-to-t from-[var(--color-surface)]/40 to-transparent opacity-0 group-hover/pdf:opacity-100 transition-opacity duration-300" />
-                        <div className="absolute top-2 right-2 inline-flex items-center gap-1 rounded-lg bg-[var(--color-background)]/70 backdrop-blur-sm px-2 py-1 text-[10px] font-semibold text-[var(--color-primary-light)]">
-                          <FiFileText size={11} /> PDF
+                        <PdfThumbnail url={certPdf(cert)} alt={cert.name} />
+                        <div className="absolute inset-0 bg-gradient-to-t from-[var(--color-surface)]/30 to-transparent opacity-0 group-hover/pdf:opacity-100 transition-opacity duration-300" />
+                        <div className="absolute top-2 right-2 w-7 h-7 rounded-lg bg-[var(--color-background)]/60 backdrop-blur-sm flex items-center justify-center text-[var(--color-primary-light)] opacity-0 group-hover/pdf:opacity-100 transition-opacity duration-300">
+                          <FiZoomIn size={14} />
                         </div>
                       </a>
                     ) : null}
