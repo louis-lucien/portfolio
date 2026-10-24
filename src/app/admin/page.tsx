@@ -137,6 +137,66 @@ function slugify(s: string): string {
     .replace(/^-+|-+$/g, "");
 }
 
+// Generic drag-and-drop reordering for an admin list.
+function useReorder<T>(items: T[], setItems: (v: T[]) => void) {
+  const [dragIndex, setDragIndex] = useState<number | null>(null);
+  const [overIndex, setOverIndex] = useState<number | null>(null);
+  const move = (from: number, to: number) => {
+    if (from === to || from < 0 || to < 0) return;
+    const n = [...items];
+    const [m] = n.splice(from, 1);
+    n.splice(to, 0, m);
+    setItems(n);
+  };
+  const handleProps = (i: number) => ({
+    draggable: true,
+    onDragStart: (e: React.DragEvent) => {
+      setDragIndex(i);
+      e.dataTransfer.effectAllowed = "move";
+      e.dataTransfer.setData("text/plain", String(i));
+    },
+    onDragEnd: () => {
+      setDragIndex(null);
+      setOverIndex(null);
+    },
+  });
+  const zoneProps = (i: number) => ({
+    onDragOver: (e: React.DragEvent) => {
+      if (dragIndex !== null) {
+        e.preventDefault();
+        if (overIndex !== i) setOverIndex(i);
+      }
+    },
+    onDrop: (e: React.DragEvent) => {
+      e.preventDefault();
+      if (dragIndex !== null) move(dragIndex, i);
+      setDragIndex(null);
+      setOverIndex(null);
+    },
+  });
+  const cls = (i: number) =>
+    `${dragIndex === i ? "opacity-40 " : ""}${
+      overIndex === i && dragIndex !== null && dragIndex !== i
+        ? "border-[var(--color-primary)] ring-2 ring-[var(--color-primary)]/30"
+        : ""
+    }`;
+  return { handleProps, zoneProps, cls };
+}
+
+// Small drag handle shown on reorderable cards.
+function DragHandle(props: React.HTMLAttributes<HTMLButtonElement> & { draggable?: boolean }) {
+  return (
+    <button
+      type="button"
+      {...props}
+      className="cursor-grab active:cursor-grabbing p-1 -ml-1 text-[var(--color-dim)] hover:text-[var(--color-primary-light)] transition-colors"
+      title="Glisser pour réorganiser"
+    >
+      <FiMove size={15} />
+    </button>
+  );
+}
+
 // ─── Component ───────────────────────────────────────────────
 export default function AdminPage() {
   const [activeTab, setActiveTab] = useState<Tab>("personal");
@@ -211,6 +271,12 @@ export default function AdminPage() {
   const scrollToNew = () => {
     setTimeout(() => bottomRef.current?.scrollIntoView({ behavior: "smooth", block: "center" }), 100);
   };
+
+  // Drag-and-drop reordering for each list.
+  const projReorder = useReorder(projectItems, setProjectItems);
+  const expReorder = useReorder(experiences, setExperiences);
+  const formReorder = useReorder(formations, setFormations);
+  const blogReorder = useReorder(blogPosts, setBlogPosts);
 
   // ─── Load config on mount ──────────────────────────────────
   const loadConfig = useCallback(async () => {
@@ -997,9 +1063,10 @@ export const metadata = {
                   </div>
                 </div>
                 {experiences.map((exp, i) => (
-                  <div key={i} className="p-6 rounded-2xl bg-[var(--color-surface-light)] border border-[var(--color-border)] space-y-4">
+                  <div key={i} {...expReorder.zoneProps(i)} className={`p-6 rounded-2xl bg-[var(--color-surface-light)] border border-[var(--color-border)] space-y-4 transition-all ${expReorder.cls(i)}`}>
                     <div className="flex items-center justify-between">
                       <div className="flex items-center gap-2">
+                        <DragHandle {...expReorder.handleProps(i)} />
                         <span className="text-sm font-semibold text-[var(--color-primary-light)]">Expérience {i + 1}</span>
                         <div className="flex items-center gap-1">
                           <button
@@ -1062,9 +1129,10 @@ export const metadata = {
                   <button onClick={() => { setFormations([...formations, { degree: "", speciality: "", school: "", period: "", description: "" }]); scrollToNew(); }} className="flex items-center gap-2 px-4 py-2 rounded-xl glass text-sm text-[var(--color-primary-light)]"><FiPlus size={14} /> Ajouter</button>
                 </div>
                 {formations.map((f, i) => (
-                  <div key={i} className="p-6 rounded-2xl bg-[var(--color-surface-light)] border border-[var(--color-border)] space-y-4">
+                  <div key={i} {...formReorder.zoneProps(i)} className={`p-6 rounded-2xl bg-[var(--color-surface-light)] border border-[var(--color-border)] space-y-4 transition-all ${formReorder.cls(i)}`}>
                     <div className="flex items-center justify-between">
                       <div className="flex items-center gap-2">
+                        <DragHandle {...formReorder.handleProps(i)} />
                         <span className="text-sm font-semibold text-[var(--color-primary-light)]">Formation {i + 1}</span>
                         <div className="flex items-center gap-1">
                           <button
@@ -1121,9 +1189,12 @@ export const metadata = {
                   <button onClick={() => { setProjectItems([...projectItems, { title: "", description: "", tags: [], category: "", github: "", live: "", featured: false }]); scrollToNew(); }} className="flex items-center gap-2 px-4 py-2 rounded-xl glass text-sm text-[var(--color-primary-light)]"><FiPlus size={14} /> Ajouter</button>
                 </div>
                 {projectItems.map((p, i) => (
-                  <div key={i} className="p-6 rounded-2xl bg-[var(--color-surface-light)] border border-[var(--color-border)] space-y-4">
+                  <div key={i} {...projReorder.zoneProps(i)} className={`p-6 rounded-2xl bg-[var(--color-surface-light)] border border-[var(--color-border)] space-y-4 transition-all ${projReorder.cls(i)}`}>
                     <div className="flex items-center justify-between">
-                      <span className="text-sm font-semibold text-[var(--color-primary-light)]">Projet {i + 1}</span>
+                      <div className="flex items-center gap-2">
+                        <DragHandle {...projReorder.handleProps(i)} />
+                        <span className="text-sm font-semibold text-[var(--color-primary-light)]">Projet {i + 1}</span>
+                      </div>
                       <div className="flex items-center gap-4">
                         <label className="flex items-center gap-2 text-xs text-[var(--color-muted)] cursor-pointer">
                           <input type="checkbox" checked={p.featured} onChange={(e) => { const n = [...projectItems]; n[i] = { ...n[i], featured: e.target.checked }; setProjectItems(n); }} className="accent-[var(--color-primary)]" />
@@ -1191,9 +1262,10 @@ export const metadata = {
                 </div>
 
                 {blogPosts.map((p, i) => (
-                  <div key={i} className="p-6 rounded-2xl bg-[var(--color-surface-light)] border border-[var(--color-border)] space-y-4">
+                  <div key={i} {...blogReorder.zoneProps(i)} className={`p-6 rounded-2xl bg-[var(--color-surface-light)] border border-[var(--color-border)] space-y-4 transition-all ${blogReorder.cls(i)}`}>
                     <div className="flex items-center justify-between">
                       <div className="flex items-center gap-2">
+                        <DragHandle {...blogReorder.handleProps(i)} />
                         <span className="text-sm font-semibold text-[var(--color-primary-light)]">Article {i + 1}</span>
                         <div className="flex items-center gap-1">
                           <button onClick={() => { if (i === 0) return; const n = [...blogPosts]; [n[i - 1], n[i]] = [n[i], n[i - 1]]; setBlogPosts(n); }} disabled={i === 0} className="p-1 rounded text-[var(--color-dim)] hover:text-[var(--color-primary-light)] disabled:opacity-20 disabled:cursor-not-allowed transition-colors" title="Monter"><FiChevronUp size={14} /></button>
