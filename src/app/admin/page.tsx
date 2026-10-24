@@ -23,6 +23,7 @@ import {
 } from "react-icons/fi";
 import RichTextEditor from "@/components/RichTextEditor";
 import PeriodPicker from "@/components/PeriodPicker";
+import { formatDate } from "@/lib/date";
 
 // ─── Types ───────────────────────────────────────────────────
 interface PersonalData {
@@ -1355,7 +1356,13 @@ export const metadata = {
                     <div className="grid sm:grid-cols-2 gap-4">
                       <div><label className={labelClass}>Nom</label><input value={c.name} onChange={(e) => { const n = [...certs]; n[i] = { ...n[i], name: e.target.value }; setCerts(n); }} className={inputClass} /></div>
                       <div><label className={labelClass}>Organisme</label><input value={c.issuer} onChange={(e) => { const n = [...certs]; n[i] = { ...n[i], issuer: e.target.value }; setCerts(n); }} className={inputClass} /></div>
-                      <div><label className={labelClass}>Date</label><input value={c.date} onChange={(e) => { const n = [...certs]; n[i] = { ...n[i], date: e.target.value }; setCerts(n); }} className={inputClass} /></div>
+                      <div>
+                        <label className={labelClass}>Date</label>
+                        <div className="flex items-center gap-2">
+                          <input value={c.date} onChange={(e) => { const n = [...certs]; n[i] = { ...n[i], date: e.target.value }; setCerts(n); }} placeholder="ex. Août 2025" className={inputClass + " flex-1"} />
+                          <input type="date" title="Choisir une date" onChange={(e) => { if (e.target.value) { const n = [...certs]; n[i] = { ...n[i], date: formatDate(e.target.value) }; setCerts(n); } }} className={inputClass + " !w-auto shrink-0"} />
+                        </div>
+                      </div>
                       <div className="sm:col-span-2">
                         <label className={labelClass}>Image du certificat</label>
                         <div className="flex flex-wrap items-center gap-3">

@@ -82,8 +82,8 @@ export default function Certifications() {
                       </div>
                     </div>
 
-                    {/* Certificate image */}
-                    {"image" in cert && cert.image && (
+                    {/* Certificate media: image preview, else PDF preview */}
+                    {"image" in cert && cert.image ? (
                       <div
                         className="relative mx-5 mb-4 rounded-xl overflow-hidden cursor-pointer bg-[var(--color-surface)]"
                         onClick={() => setLightbox(cert.image as string)}
@@ -101,11 +101,31 @@ export default function Certifications() {
                           <FiZoomIn size={14} />
                         </div>
                       </div>
-                    )}
+                    ) : certPdf(cert) ? (
+                      <a
+                        href={certPdf(cert)}
+                        target="_blank"
+                        rel="noopener noreferrer"
+                        className="group/pdf relative mx-5 mb-4 block rounded-xl overflow-hidden bg-[var(--color-surface)] border border-[var(--color-border)]"
+                      >
+                        <div className="aspect-[16/10] relative">
+                          <iframe
+                            src={`${certPdf(cert)}#toolbar=0&navpanes=0&scrollbar=0&view=FitH`}
+                            title={cert.name}
+                            loading="lazy"
+                            className="absolute inset-0 w-full h-full pointer-events-none"
+                          />
+                        </div>
+                        <div className="absolute inset-0 bg-gradient-to-t from-[var(--color-surface)]/40 to-transparent opacity-0 group-hover/pdf:opacity-100 transition-opacity duration-300" />
+                        <div className="absolute top-2 right-2 inline-flex items-center gap-1 rounded-lg bg-[var(--color-background)]/70 backdrop-blur-sm px-2 py-1 text-[10px] font-semibold text-[var(--color-primary-light)]">
+                          <FiFileText size={11} /> PDF
+                        </div>
+                      </a>
+                    ) : null}
 
-                    {/* Certificate PDF */}
-                    {certPdf(cert) && (
-                      <div className="px-5 pb-5">
+                    {/* Extra PDF link when an image is already the main visual */}
+                    {certPdf(cert) && "image" in cert && cert.image && (
+                      <div className="px-5 pb-5 -mt-1">
                         <a
                           href={certPdf(cert)}
                           target="_blank"
