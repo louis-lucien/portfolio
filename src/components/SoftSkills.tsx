@@ -56,7 +56,7 @@ export default function SoftSkills() {
         >
           <div className="flex items-center gap-4 mb-4">
             <span className="text-sm text-[var(--color-primary-light)] font-mono">
-              04.
+              03.
             </span>
             <h2 className="text-3xl sm:text-4xl font-bold">
               {softSkills.heading}
