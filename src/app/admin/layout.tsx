@@ -10,6 +10,7 @@ import {
   FiAward,
   FiImage,
   FiCode,
+  FiUsers,
   FiSave,
   FiCheck,
   FiAlertCircle,
@@ -128,7 +129,13 @@ interface SkillCategory {
   items: SkillItem[];
 }
 
-type Tab = "personal" | "hero" | "pillars" | "skills" | "experience" | "formation" | "projects" | "blog" | "certifications" | "images";
+interface SoftSkillItem {
+  name: string;
+  icon: string;
+  description: string;
+}
+
+type Tab = "personal" | "hero" | "pillars" | "skills" | "softskills" | "experience" | "formation" | "projects" | "blog" | "certifications" | "images";
 
 // URL-friendly slug from a title (lowercase, no accents, dashes).
 function slugify(s: string): string {
@@ -202,7 +209,7 @@ function DragHandle(props: React.HTMLAttributes<HTMLButtonElement> & { draggable
 
 // ─── Component ───────────────────────────────────────────────
 const TAB_IDS: Tab[] = [
-  "personal", "hero", "pillars", "skills", "experience",
+  "personal", "hero", "pillars", "skills", "softskills", "experience",
   "formation", "projects", "blog", "certifications", "images",
 ];
 
@@ -268,6 +275,11 @@ export default function AdminLayout({ children }: { children: React.ReactNode })
     { title: "Intelligence Artificielle", icon: "brain", description: "" },
   ]);
   const [skillCategories, setSkillCategories] = useState<SkillCategory[]>([]);
+  const [softSkillItems, setSoftSkillItems] = useState<SoftSkillItem[]>([]);
+  const [softSkillsHeading, setSoftSkillsHeading] = useState("Savoir-être");
+  const [softSkillsDescription, setSoftSkillsDescription] = useState(
+    "Ce qui fait la différence en équipe et face au métier, au-delà de la technique."
+  );
   const [skillChainSteps, setSkillChainSteps] = useState<string[]>(["Collecte", "Traitement", "Analyse", "Exploitation"]);
   const [showLevels, setShowLevels] = useState(false);
   const [showProfileType, setShowProfileType] = useState(true);
@@ -287,6 +299,7 @@ export default function AdminLayout({ children }: { children: React.ReactNode })
   const expReorder = useReorder(experiences, setExperiences);
   const formReorder = useReorder(formations, setFormations);
   const blogReorder = useReorder(blogPosts, setBlogPosts);
+  const softReorder = useReorder(softSkillItems, setSoftSkillItems);
 
   // ─── Load config on mount ──────────────────────────────────
   const loadConfig = useCallback(async () => {
@@ -327,6 +340,9 @@ export default function AdminLayout({ children }: { children: React.ReactNode })
         if (d.about?.showPillars !== undefined) setShowPillars(d.about.showPillars);
         if (d.about?.showTraitValues !== undefined) setShowTraitValues(d.about.showTraitValues);
         if (d.skills?.categories) setSkillCategories(d.skills.categories);
+        if (d.softSkills?.items) setSoftSkillItems(d.softSkills.items);
+        if (d.softSkills?.heading) setSoftSkillsHeading(d.softSkills.heading);
+        if (d.softSkills?.description) setSoftSkillsDescription(d.softSkills.description);
         if (d.skills?.chain?.steps) setSkillChainSteps(d.skills.chain.steps);
         if (d.skills?.showLevels !== undefined) setShowLevels(d.skills.showLevels);
       }
@@ -526,6 +542,14 @@ ${cat.items.map((item) => `        { name: ${q(item.name)}, level: ${item.level}
   ],
 };
 
+export const softSkills = {
+  heading: ${q(softSkillsHeading)},
+  description: ${q(softSkillsDescription)},
+  items: [
+${softSkillItems.map((s) => `    { name: ${q(s.name)}, icon: ${q(s.icon)}, description: ${q(s.description)} },`).join("\n")}
+  ],
+};
+
 export const projects = {
   heading: "Réalisations",
   items: [
@@ -647,6 +671,7 @@ export const metadata = {
     { id: "hero", label: "Hero / Accueil", icon: <FiCode size={16} /> },
     { id: "pillars" as Tab, label: "Profil Hybride", icon: <FiCode size={16} /> },
     { id: "skills" as Tab, label: "Expertise Technique", icon: <FiCode size={16} /> },
+    { id: "softskills" as Tab, label: "Soft Skills", icon: <FiUsers size={16} /> },
     { id: "experience", label: "Expérience", icon: <FiBriefcase size={16} /> },
     { id: "formation", label: "Formation", icon: <FiFileText size={16} /> },
     { id: "projects", label: "Projets", icon: <FiCode size={16} /> },
@@ -1048,6 +1073,48 @@ export const metadata = {
                         </div>
                       ))}
                     </div>
+                  </div>
+                ))}
+              </>
+            )}
+
+            {/* ═══════ SOFT SKILLS ═══════ */}
+            {activeTab === "softskills" && (
+              <>
+                <div className="flex items-center justify-between flex-wrap gap-3">
+                  <h2 className="text-2xl font-bold">Soft Skills</h2>
+                  <button onClick={() => { setSoftSkillItems([...softSkillItems, { name: "", icon: "message", description: "" }]); scrollToNew(); }} className="flex items-center gap-2 px-4 py-2 rounded-xl glass text-sm text-[var(--color-primary-light)]"><FiPlus size={14} /> Ajouter</button>
+                </div>
+                <p className="text-xs text-[var(--color-dim)] flex items-center gap-1.5 -mt-2">
+                  <FiMove size={12} /> Glissez la poignée pour réorganiser.
+                </p>
+
+                <div className="grid sm:grid-cols-2 gap-4">
+                  <div><label className={labelClass}>Titre de la section</label><input value={softSkillsHeading} onChange={(e) => setSoftSkillsHeading(e.target.value)} className={inputClass} /></div>
+                  <div><label className={labelClass}>Description de la section</label><input value={softSkillsDescription} onChange={(e) => setSoftSkillsDescription(e.target.value)} className={inputClass} /></div>
+                </div>
+
+                {softSkillItems.map((s, i) => (
+                  <div key={i} {...softReorder.zoneProps(i)} className={`p-5 rounded-2xl bg-[var(--color-surface-light)] border border-[var(--color-border)] space-y-4 transition-all ${softReorder.cls(i)}`}>
+                    <div className="flex items-center justify-between">
+                      <div className="flex items-center gap-2">
+                        <DragHandle {...softReorder.handleProps(i)} />
+                        <span className="text-sm font-semibold text-[var(--color-primary-light)]">Soft skill {i + 1}</span>
+                      </div>
+                      <button onClick={() => setSoftSkillItems(softSkillItems.filter((_, j) => j !== i))} className="text-[var(--color-dim)] hover:text-red-400"><FiTrash2 size={14} /></button>
+                    </div>
+                    <div className="grid sm:grid-cols-2 gap-4">
+                      <div><label className={labelClass}>Nom</label><input value={s.name} onChange={(e) => { const n = [...softSkillItems]; n[i] = { ...n[i], name: e.target.value }; setSoftSkillItems(n); }} className={inputClass} /></div>
+                      <div><label className={labelClass}>Icône</label><select value={s.icon} onChange={(e) => { const n = [...softSkillItems]; n[i] = { ...n[i], icon: e.target.value }; setSoftSkillItems(n); }} className={inputClass}>
+                        <option value="message">Communication</option>
+                        <option value="users">Équipe</option>
+                        <option value="teach">Pédagogie</option>
+                        <option value="listen">Écoute</option>
+                        <option value="adapt">Adaptabilité</option>
+                        <option value="coordinate">Coordination</option>
+                      </select></div>
+                    </div>
+                    <div><label className={labelClass}>Description</label><textarea value={s.description} onChange={(e) => { const n = [...softSkillItems]; n[i] = { ...n[i], description: e.target.value }; setSoftSkillItems(n); }} rows={2} className={inputClass + " resize-none"} /></div>
                   </div>
                 ))}
               </>

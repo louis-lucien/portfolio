@@ -122,6 +122,20 @@ export const skills = {
   ],
 };
 
+export const softSkills = {
+  heading: "Savoir-être",
+  description:
+    "Ce qui fait la différence en équipe et face au métier, au-delà de la technique.",
+  items: [
+    { name: "Communication", icon: "message", description: "Traduire la technique en décisions claires pour le métier et les non-spécialistes." },
+    { name: "Travail d'équipe", icon: "users", description: "Collaborer en méthodologie Agile et faire avancer le collectif." },
+    { name: "Pédagogie & vulgarisation", icon: "teach", description: "Expliquer simplement des concepts complexes, former et transmettre." },
+    { name: "Écoute du besoin", icon: "listen", description: "Comprendre le métier et poser les bonnes questions avant de proposer." },
+    { name: "Adaptabilité", icon: "adapt", description: "M'ajuster vite à de nouveaux outils, contextes et interlocuteurs." },
+    { name: "Coordination", icon: "coordinate", description: "Organiser, prioriser et faire le lien entre les parties prenantes." },
+  ],
+};
+
 export const projects = {
   heading: "Réalisations",
   items: [

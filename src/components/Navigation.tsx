@@ -9,7 +9,7 @@ import { personal } from "@/config/portfolio";
 import { useTheme } from "./ThemeProvider";
 
 const navLinks = [
-  { name: "Accueil", href: "/#hero", sections: ["hero", "about", "skills"] },
+  { name: "Accueil", href: "/#hero", sections: ["hero", "about", "skills", "soft-skills"] },
   { name: "Formation", href: "/#formation", sections: ["formation", "certifications"] },
   { name: "Parcours", href: "/#experience", sections: ["experience", "contact"] },
   { name: "Projets", href: "/projects", sections: [] },

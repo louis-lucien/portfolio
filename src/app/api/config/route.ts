@@ -8,7 +8,7 @@ const CONFIG_PATH = path.join(process.cwd(), "src/config/portfolio.ts");
 const CONFIG_REPO_PATH = "src/config/portfolio.ts";
 
 const CONFIG_EXPORTS = [
-  "personal", "hero", "about", "skills", "projects",
+  "personal", "hero", "about", "skills", "softSkills", "projects",
   "formation", "certifications", "experience", "contact", "blog",
 ];
 
@@ -58,6 +58,7 @@ export async function GET() {
         hero: mod.hero,
         about: mod.about,
         skills: mod.skills,
+        softSkills: mod.softSkills,
         projects: mod.projects,
         formation: mod.formation,
         certifications: mod.certifications,
