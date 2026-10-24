@@ -9,8 +9,16 @@ import {
   FiChevronUp,
   FiX,
   FiZoomIn,
+  FiFileText,
 } from "react-icons/fi";
 import { certifications } from "@/config/portfolio";
+
+type Cert = (typeof certifications.items)[number];
+
+function certPdf(c: Cert): string {
+  const p = (c as Record<string, unknown>).pdf;
+  return typeof p === "string" ? p : "";
+}
 
 export default function Certifications() {
   const ref = useRef(null);
@@ -92,6 +100,20 @@ export default function Certifications() {
                         <div className="absolute top-2 right-2 w-7 h-7 rounded-lg bg-[var(--color-background)]/60 backdrop-blur-sm flex items-center justify-center text-[var(--color-primary-light)] opacity-0 group-hover:opacity-100 transition-opacity duration-300">
                           <FiZoomIn size={14} />
                         </div>
+                      </div>
+                    )}
+
+                    {/* Certificate PDF */}
+                    {certPdf(cert) && (
+                      <div className="px-5 pb-5">
+                        <a
+                          href={certPdf(cert)}
+                          target="_blank"
+                          rel="noopener noreferrer"
+                          className="inline-flex items-center gap-1.5 text-xs font-medium text-[var(--color-primary-light)] hover:underline"
+                        >
+                          <FiFileText size={13} /> Voir le certificat (PDF)
+                        </a>
                       </div>
                     )}
 

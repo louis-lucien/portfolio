@@ -66,6 +66,7 @@ interface CertItem {
   date: string;
   highlight: boolean;
   image?: string;
+  pdf?: string;
 }
 
 interface ProjectItem {
@@ -486,7 +487,7 @@ ${certs.map((c) => `    {
       name: ${q(c.name)},
       issuer: ${q(c.issuer)},
       date: ${q(c.date)},
-      highlight: ${c.highlight},${c.image ? `\n      image: ${q(c.image)},` : ""}
+      highlight: ${c.highlight},${c.image ? `\n      image: ${q(c.image)},` : ""}${c.pdf ? `\n      pdf: ${q(c.pdf)},` : ""}
     },`).join("\n")}
   ],
 };
@@ -1307,6 +1308,33 @@ export const metadata = {
                           // eslint-disable-next-line @next/next/no-img-element
                           <img src={c.image} alt="" className="mt-3 h-24 rounded-lg object-contain border border-[var(--color-border)] bg-[var(--color-surface)]" />
                         )}
+                      </div>
+                      <div className="sm:col-span-2">
+                        <label className={labelClass}>Fichier PDF du certificat (optionnel)</label>
+                        <div className="flex flex-wrap items-center gap-3">
+                          {c.pdf ? (
+                            <a href={c.pdf} target="_blank" rel="noopener noreferrer" className="flex items-center gap-2 text-sm text-[var(--color-primary-light)] underline">
+                              <FiFileText size={14} /> Voir le PDF actuel
+                            </a>
+                          ) : (
+                            <span className="text-xs text-[var(--color-dim)]">Aucun PDF</span>
+                          )}
+                          <label className="flex items-center gap-2 px-4 py-2.5 rounded-xl glass text-sm text-[var(--color-primary-light)] hover:bg-[var(--color-primary)]/10 transition-colors cursor-pointer whitespace-nowrap">
+                            <FiFileText size={14} />
+                            {uploadingTo?.startsWith("documents/certs/") ? "Upload..." : "Uploader un PDF"}
+                            <input type="file" accept="application/pdf" className="hidden" onChange={async (e) => {
+                              const file = e.target.files?.[0];
+                              if (file) {
+                                const name = file.name.toLowerCase().replace(/\s+/g, "-").replace(/[^a-z0-9._-]/g, "-");
+                                const path = await handleUpload(file, `documents/certs/${name}`);
+                                if (path) { const n = [...certs]; n[i] = { ...n[i], pdf: path }; setCerts(n); }
+                              }
+                            }} />
+                          </label>
+                          {c.pdf && (
+                            <button type="button" onClick={() => { const n = [...certs]; n[i] = { ...n[i], pdf: "" }; setCerts(n); }} className="text-xs text-[var(--color-dim)] hover:text-red-400 underline">Retirer</button>
+                          )}
+                        </div>
                       </div>
                     </div>
                   </div>
