@@ -1,6 +1,5 @@
 import Navigation from "@/components/Navigation";
 import Hero from "@/components/Hero";
-import Stats from "@/components/Stats";
 import About from "@/components/About";
 import Skills from "@/components/Skills";
 import Formation from "@/components/Formation";
@@ -14,7 +13,6 @@ export default function Home() {
     <main>
       <Navigation />
       <Hero />
-      <Stats />
       <About />
       <Skills />
       <Formation />
