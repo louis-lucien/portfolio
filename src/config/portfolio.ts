@@ -337,6 +337,13 @@ export const certifications = {
       highlight: true,
       image: "/images/certs/python_certificat.jpg",
     },
+    {
+      name: "Developpement Mobile Niveau Avancé",
+      issuer: "Organisation Internationale de la Francophonie",
+      date: "3/02/2026",
+      highlight: false,
+      pdf: "/documents/certs/attestation_de_formation_dev_mobile_avan.pdf",
+    },
   ],
 };
 
