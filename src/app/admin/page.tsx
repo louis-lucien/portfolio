@@ -19,6 +19,7 @@ import {
   FiChevronDown,
   FiChevronsUp,
   FiChevronsDown,
+  FiMove,
 } from "react-icons/fi";
 import RichTextEditor from "@/components/RichTextEditor";
 import PeriodPicker from "@/components/PeriodPicker";
@@ -172,6 +173,16 @@ export default function AdminPage() {
     "Retours d'expérience et repères techniques sur la data engineering, l'IoT, l'intelligence artificielle et la mise en production de systèmes fiables."
   );
   const [certs, setCerts] = useState<CertItem[]>([]);
+  // Drag & drop reordering state for certifications.
+  const [certDrag, setCertDrag] = useState<number | null>(null);
+  const [certOver, setCertOver] = useState<number | null>(null);
+  const moveCert = (from: number, to: number) => {
+    if (from === to || from < 0 || to < 0) return;
+    const n = [...certs];
+    const [m] = n.splice(from, 1);
+    n.splice(to, 0, m);
+    setCerts(n);
+  };
   const [profileTypeDesc, setProfileTypeDesc] = useState("Esprit stratégique, analytique, visionnaire. L'INTJ-A ne se contente pas de résoudre des problèmes — il les anticipe et conçoit des systèmes pour les prévenir.");
   const [traits, setTraits] = useState<TraitItem[]>([
     { letter: "I", name: "Introverti", value: 78 },
@@ -1230,10 +1241,28 @@ export const metadata = {
                   <h2 className="text-2xl font-bold">Certifications</h2>
                   <button onClick={() => { setCerts([...certs, { name: "", issuer: "", date: "", highlight: false }]); scrollToNew(); }} className="flex items-center gap-2 px-4 py-2 rounded-xl glass text-sm text-[var(--color-primary-light)]"><FiPlus size={14} /> Ajouter</button>
                 </div>
+                <p className="text-xs text-[var(--color-dim)] flex items-center gap-1.5 -mt-2">
+                  <FiMove size={12} /> Glissez la poignée pour réorganiser, ou utilisez les flèches (⟰ tout en haut · ⟱ tout en bas).
+                </p>
                 {certs.map((c, i) => (
-                  <div key={i} className="p-5 rounded-2xl bg-[var(--color-surface-light)] border border-[var(--color-border)] space-y-4">
+                  <div
+                    key={i}
+                    onDragOver={(e) => { if (certDrag !== null) { e.preventDefault(); if (certOver !== i) setCertOver(i); } }}
+                    onDrop={(e) => { e.preventDefault(); if (certDrag !== null) moveCert(certDrag, i); setCertDrag(null); setCertOver(null); }}
+                    className={`p-5 rounded-2xl bg-[var(--color-surface-light)] border space-y-4 transition-all ${certDrag === i ? "opacity-40" : ""} ${certOver === i && certDrag !== null && certDrag !== i ? "border-[var(--color-primary)] ring-2 ring-[var(--color-primary)]/30" : "border-[var(--color-border)]"}`}
+                  >
                     <div className="flex items-center justify-between">
                       <div className="flex items-center gap-2">
+                        <button
+                          type="button"
+                          draggable
+                          onDragStart={(e) => { setCertDrag(i); e.dataTransfer.effectAllowed = "move"; e.dataTransfer.setData("text/plain", String(i)); }}
+                          onDragEnd={() => { setCertDrag(null); setCertOver(null); }}
+                          className="cursor-grab active:cursor-grabbing p-1 -ml-1 text-[var(--color-dim)] hover:text-[var(--color-primary-light)] transition-colors"
+                          title="Glisser pour réorganiser"
+                        >
+                          <FiMove size={15} />
+                        </button>
                         <span className="text-sm font-semibold text-[var(--color-primary-light)]">Certification {i + 1}</span>
                         <div className="flex items-center gap-1">
                           <button onClick={() => { if (i === 0) return; const n = [...certs]; const [m] = n.splice(i, 1); n.unshift(m); setCerts(n); }} disabled={i === 0} className="p-1 rounded text-[var(--color-dim)] hover:text-[var(--color-primary-light)] disabled:opacity-20 disabled:cursor-not-allowed transition-colors" title="Tout en haut"><FiChevronsUp size={14} /></button>
