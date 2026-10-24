@@ -123,16 +123,20 @@ export const skills = {
 };
 
 export const softSkills = {
-  heading: "Savoir-être",
+  heading: "Soft Skills",
   description:
-    "Ce qui fait la différence en équipe et face au métier, au-delà de la technique.",
+    "Au-delà des compétences techniques, ma manière de travailler repose sur l'analyse, la rigueur et la compréhension globale des problèmes. Curieux et exigeant dans ma démarche, j'accorde autant d'importance à la qualité des solutions qu'à leur pertinence métier, à leur durabilité et à la manière dont elles répondent aux besoins des utilisateurs.",
   items: [
-    { name: "Communication", icon: "message", description: "Traduire la technique en décisions claires pour le métier et les non-spécialistes." },
-    { name: "Travail d'équipe", icon: "users", description: "Collaborer en méthodologie Agile et faire avancer le collectif." },
-    { name: "Pédagogie & vulgarisation", icon: "teach", description: "Expliquer simplement des concepts complexes, former et transmettre." },
-    { name: "Écoute du besoin", icon: "listen", description: "Comprendre le métier et poser les bonnes questions avant de proposer." },
-    { name: "Adaptabilité", icon: "adapt", description: "M'ajuster vite à de nouveaux outils, contextes et interlocuteurs." },
-    { name: "Coordination", icon: "coordinate", description: "Organiser, prioriser et faire le lien entre les parties prenantes." },
+    { name: "Esprit analytique", icon: "analysis", description: "J'analyse les situations en profondeur pour comprendre les causes, identifier les enjeux et prendre des décisions éclairées." },
+    { name: "Vision systémique", icon: "system", description: "J'appréhende les problèmes dans leur ensemble en tenant compte des interactions entre les technologies, les données, les utilisateurs et les processus métier." },
+    { name: "Résolution de problèmes complexes", icon: "target", description: "J'aime relever des défis, remonter aux causes des difficultés et concevoir des solutions adaptées aux contraintes réelles." },
+    { name: "Rigueur et exigence de qualité", icon: "check", description: "J'accorde une attention particulière à la précision, à la cohérence et à la fiabilité afin de construire des solutions durables." },
+    { name: "Curiosité intellectuelle", icon: "curiosity", description: "Je cherche à comprendre le pourquoi des choses, à approfondir mes connaissances et à explorer de nouvelles approches pour progresser continuellement." },
+    { name: "Autonomie et esprit d'initiative", icon: "autonomy", description: "Je prends en charge les problématiques qui me sont confiées, explore les pistes de résolution et cherche à faire avancer les projets avec responsabilité." },
+    { name: "Écoute et ouverture d'esprit", icon: "listen", description: "Je prends en considération les retours, les opinions divergentes et les besoins des autres afin d'enrichir ma réflexion et d'améliorer les solutions proposées." },
+    { name: "Communication et vulgarisation", icon: "message", description: "Je cherche à rendre les sujets complexes accessibles et à adapter mes explications à mes interlocuteurs, qu'ils soient techniques ou non." },
+    { name: "Intelligence émotionnelle", icon: "empathy", description: "Je cherche à comprendre mes réactions, à prendre du recul face aux difficultés et à considérer les émotions et les perspectives des personnes avec lesquelles j'interagis." },
+    { name: "Amélioration continue", icon: "improve", description: "Je considère chaque difficulté comme une occasion d'apprendre, de remettre en question l'existant et de rendre les solutions plus efficaces et plus robustes." },
   ],
 };
 

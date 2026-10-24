@@ -3,10 +3,18 @@
 import { motion, useInView } from "framer-motion";
 import { useRef } from "react";
 import {
+  FiActivity,
+  FiLayers,
+  FiTarget,
+  FiCheckCircle,
+  FiSearch,
+  FiCompass,
+  FiHeadphones,
   FiMessageCircle,
+  FiHeart,
+  FiTrendingUp,
   FiUsers,
   FiBookOpen,
-  FiHeadphones,
   FiRefreshCw,
   FiShare2,
   FiStar,
@@ -14,10 +22,19 @@ import {
 import { softSkills } from "@/config/portfolio";
 
 const icons: Record<string, React.ReactNode> = {
+  analysis: <FiActivity size={20} />,
+  system: <FiLayers size={20} />,
+  target: <FiTarget size={20} />,
+  check: <FiCheckCircle size={20} />,
+  curiosity: <FiSearch size={20} />,
+  autonomy: <FiCompass size={20} />,
+  listen: <FiHeadphones size={20} />,
   message: <FiMessageCircle size={20} />,
+  empathy: <FiHeart size={20} />,
+  improve: <FiTrendingUp size={20} />,
+  // Also available in the admin picker:
   users: <FiUsers size={20} />,
   teach: <FiBookOpen size={20} />,
-  listen: <FiHeadphones size={20} />,
   adapt: <FiRefreshCw size={20} />,
   coordinate: <FiShare2 size={20} />,
 };
@@ -47,7 +64,7 @@ export default function SoftSkills() {
             <div className="h-px flex-1 bg-[var(--color-border)]" />
           </div>
           {softSkills.description && (
-            <p className="text-[var(--color-muted)] text-[15px] max-w-xl ml-9">
+            <p className="text-[var(--color-muted)] text-[15px] leading-relaxed max-w-3xl ml-9">
               {softSkills.description}
             </p>
           )}

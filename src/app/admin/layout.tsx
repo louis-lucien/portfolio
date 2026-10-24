@@ -276,9 +276,9 @@ export default function AdminLayout({ children }: { children: React.ReactNode })
   ]);
   const [skillCategories, setSkillCategories] = useState<SkillCategory[]>([]);
   const [softSkillItems, setSoftSkillItems] = useState<SoftSkillItem[]>([]);
-  const [softSkillsHeading, setSoftSkillsHeading] = useState("Savoir-être");
+  const [softSkillsHeading, setSoftSkillsHeading] = useState("Soft Skills");
   const [softSkillsDescription, setSoftSkillsDescription] = useState(
-    "Ce qui fait la différence en équipe et face au métier, au-delà de la technique."
+    "Au-delà des compétences techniques, ma manière de travailler repose sur l'analyse, la rigueur et la compréhension globale des problèmes."
   );
   const [skillChainSteps, setSkillChainSteps] = useState<string[]>(["Collecte", "Traitement", "Analyse", "Exploitation"]);
   const [showLevels, setShowLevels] = useState(false);
@@ -1106,10 +1106,18 @@ export const metadata = {
                     <div className="grid sm:grid-cols-2 gap-4">
                       <div><label className={labelClass}>Nom</label><input value={s.name} onChange={(e) => { const n = [...softSkillItems]; n[i] = { ...n[i], name: e.target.value }; setSoftSkillItems(n); }} className={inputClass} /></div>
                       <div><label className={labelClass}>Icône</label><select value={s.icon} onChange={(e) => { const n = [...softSkillItems]; n[i] = { ...n[i], icon: e.target.value }; setSoftSkillItems(n); }} className={inputClass}>
+                        <option value="analysis">Analyse</option>
+                        <option value="system">Vision systémique</option>
+                        <option value="target">Résolution de problèmes</option>
+                        <option value="check">Rigueur / Qualité</option>
+                        <option value="curiosity">Curiosité</option>
+                        <option value="autonomy">Autonomie</option>
+                        <option value="listen">Écoute</option>
                         <option value="message">Communication</option>
+                        <option value="empathy">Intelligence émotionnelle</option>
+                        <option value="improve">Amélioration continue</option>
                         <option value="users">Équipe</option>
                         <option value="teach">Pédagogie</option>
-                        <option value="listen">Écoute</option>
                         <option value="adapt">Adaptabilité</option>
                         <option value="coordinate">Coordination</option>
                       </select></div>
