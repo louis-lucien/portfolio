@@ -124,8 +124,7 @@ export const skills = {
 
 export const softSkills = {
   heading: "Soft Skills",
-  description:
-    "Au-delà des compétences techniques, ma manière de travailler repose sur l'analyse, la rigueur et la compréhension globale des problèmes. Curieux et exigeant dans ma démarche, j'accorde autant d'importance à la qualité des solutions qu'à leur pertinence métier, à leur durabilité et à la manière dont elles répondent aux besoins des utilisateurs.",
+  description: "Au-delà des compétences techniques, ma manière de travailler repose sur l'analyse, la rigueur et la compréhension globale des problèmes. Curieux et exigeant dans ma démarche, j'accorde autant d'importance à la qualité des solutions qu'à leur pertinence métier, à leur durabilité et à la manière dont elles répondent aux besoins des utilisateurs.",
   items: [
     { name: "Esprit analytique", icon: "analysis", description: "J'analyse les situations en profondeur pour comprendre les causes, identifier les enjeux et prendre des décisions éclairées." },
     { name: "Vision systémique", icon: "system", description: "J'appréhende les problèmes dans leur ensemble en tenant compte des interactions entre les technologies, les données, les utilisateurs et les processus métier." },
@@ -375,6 +374,13 @@ export const certifications = {
       date: "3 févr. 2026",
       highlight: true,
       pdf: "/documents/certs/attestation_de_formation_dev_mobile_avan.pdf",
+    },
+    {
+      name: "Intelligence Artificielle",
+      issuer: "Université Numérique Cheikh Hamidou Kane, Programme Force-N",
+      date: "17 nov. 2026",
+      highlight: false,
+      pdf: "/documents/certs/certificat_intelligence_artificielle_force_n.pdf",
     },
   ],
 };
