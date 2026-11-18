@@ -379,7 +379,7 @@ export const certifications = {
       name: "Intelligence Artificielle",
       issuer: "Université Numérique Cheikh Hamidou Kane, Programme Force-N",
       date: "17 nov. 2026",
-      highlight: false,
+      highlight: true,
       pdf: "/documents/certs/certificat_intelligence_artificielle_force_n.pdf",
     },
   ],
