@@ -382,6 +382,13 @@ export const certifications = {
       highlight: true,
       pdf: "/documents/certs/certificat_intelligence_artificielle_force_n.pdf",
     },
+    {
+      name: "IBM IT Project Manager",
+      issuer: "IBM",
+      date: "19 nov. 2026",
+      highlight: true,
+      pdf: "/documents/certs/certificat-ibm-it-project-manager.pdf",
+    },
   ],
 };
 
